@@ -66,11 +66,12 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 		PlanID:           planID,
 		OrganizationGUID: "eden-unknown-guid",
 		SpaceGUID:        "eden-unknown-space",
+		RawParameters:    nil,
 	}
 
 	buffer := &bytes.Buffer{}
 	if err = json.NewEncoder(buffer).Encode(details); err != nil {
-		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		return nil, errwrap.Wrapf("Cannot encode provisioning details: {{err}}", err)
 	}
 	req, err := http.NewRequest("PUT", url, buffer)
 	if err != nil {
@@ -94,6 +95,46 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 	err = json.Unmarshal(resBody, provisioningResp)
 	if err != nil {
 		return nil, errwrap.Wrapf("Failed unmarshalling provisioning response: {{err}}", err)
+	}
+	return
+}
+
+// Bind requests new set of credentials to access service instance
+func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID string) (binding *brokerapi.Binding, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s/service_bindings/%s", broker.url, instanceID, bindingID)
+	details := brokerapi.BindDetails{
+		ServiceID:     serviceID,
+		PlanID:        planID,
+		AppGUID:       "eden-unknown",
+		RawParameters: nil,
+	}
+
+	buffer := &bytes.Buffer{}
+	if err = json.NewEncoder(buffer).Encode(details); err != nil {
+		return nil, errwrap.Wrapf("Cannot encode binding details: {{err}}", err)
+	}
+	req, err := http.NewRequest("PUT", url, buffer)
+	if err != nil {
+		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+	binding = &brokerapi.Binding{}
+	err = json.Unmarshal(resBody, binding)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed unmarshalling binding response: {{err}}", err)
 	}
 	return
 }

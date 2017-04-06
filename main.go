@@ -36,6 +36,8 @@ func main() {
 	}
 
 	instanceID := uuid.New()
+	bindingID := uuid.New()
+
 	provisioningResp, err := broker.Provision(serviceID, planID, instanceID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -43,4 +45,12 @@ func main() {
 	}
 
 	fmt.Printf("%#v\n", provisioningResp)
+
+	bindingResp, err := broker.Bind(serviceID, planID, instanceID, bindingID)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("%#v\n", bindingResp)
 }
