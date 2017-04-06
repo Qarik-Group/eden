@@ -69,8 +69,16 @@ func main() {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("%#v\n", provisioningResp)
-	fmt.Printf("is async = %v\n", isAsync)
+	fmt.Printf("provision: %#v\n", provisioningResp)
+	fmt.Printf("provision is async = %v\n", isAsync)
+	if isAsync {
+		lastOpResp, err2 := broker.LastOperation(serviceID, planID, instanceID)
+		if err2 != nil {
+			fmt.Fprintln(os.Stderr, err2.Error())
+			os.Exit(1)
+		}
+		fmt.Println(lastOpResp.State, lastOpResp.Description)
+	}
 
 	// TODO - store allocated bindingID into local DB
 	bindingResp, err := broker.Bind(serviceID, planID, instanceID, bindingID)
@@ -80,18 +88,29 @@ func main() {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("%#v\n", bindingResp)
+	fmt.Printf("binding: %#v\n", bindingResp)
 
 	err = broker.Unbind(serviceID, planID, instanceID, bindingID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	fmt.Println("unbinding: done")
 
-	err = broker.Deprovision(serviceID, planID, instanceID)
+	isAsync, err = broker.Deprovision(serviceID, planID, instanceID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	fmt.Printf("deprovision is async = %v\n", isAsync)
 
+	if isAsync {
+		lastOpResp, err2 := broker.LastOperation(serviceID, planID, instanceID)
+		if err2 != nil {
+			fmt.Fprintln(os.Stderr, err2.Error())
+			os.Exit(1)
+		}
+		fmt.Println(lastOpResp.State, lastOpResp.Description)
+	}
+	fmt.Println("deprovision: done")
 }

@@ -7,4 +7,5 @@ type Broker interface {
 	Bind(serviceID, planID, instanceID, bindingID string)
 	Unbind(serviceID, planID, instanceID, bindingID string)
 	Deprovision(serviceID, planID, instanceID string)
+	LastOperation(serviceID, planID, instanceID string)
 }

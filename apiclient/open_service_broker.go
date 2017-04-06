@@ -164,13 +164,13 @@ func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID
 }
 
 // Deprovision destroys the service instance
-func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID string) (err error) {
-	url := fmt.Sprintf("%s/v2/service_instances/%s?service_id=%s&plan_id=%s",
+func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID string) (isAsync bool, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s?service_id=%s&plan_id=%s&accepts_incomplete=true",
 		broker.url, instanceID, serviceID, planID)
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
-		return errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		return false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(broker.username, broker.password)
@@ -178,8 +178,43 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+		return false, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusAccepted {
+		isAsync = true
+	}
+	return
+}
+
+// LastOperation fetches the status of the last operation perform upon a service instance
+func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID string) (lastOpResp *brokerapi.LastOperationResponse, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s/last_operation", broker.url, instanceID)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+
+	lastOpResp = &brokerapi.LastOperationResponse{}
+	err = json.Unmarshal(resBody, lastOpResp)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed unmarshalling binding response: {{err}}", err)
+	}
+
 	return
 }
