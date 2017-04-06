@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/pborman/uuid"
+	"github.com/pivotal-cf/brokerapi"
 	"github.com/starkandwayne/eden-cli/apiclient"
 	edenconfig "github.com/starkandwayne/eden-cli/config"
 )
@@ -72,12 +73,16 @@ func main() {
 	fmt.Printf("provision: %#v\n", provisioningResp)
 	fmt.Printf("provision is async = %v\n", isAsync)
 	if isAsync {
-		lastOpResp, err2 := broker.LastOperation(serviceID, planID, instanceID)
-		if err2 != nil {
-			fmt.Fprintln(os.Stderr, err2.Error())
-			os.Exit(1)
+		// TODO: don't pollute brokerapi back into this level
+		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
+		for lastOpResp.State == brokerapi.InProgress {
+			lastOpResp, err = broker.LastOperation(serviceID, planID, instanceID)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				os.Exit(1)
+			}
+			fmt.Println(lastOpResp.State, lastOpResp.Description)
 		}
-		fmt.Println(lastOpResp.State, lastOpResp.Description)
 	}
 
 	// TODO - store allocated bindingID into local DB
@@ -105,12 +110,16 @@ func main() {
 	fmt.Printf("deprovision is async = %v\n", isAsync)
 
 	if isAsync {
-		lastOpResp, err2 := broker.LastOperation(serviceID, planID, instanceID)
-		if err2 != nil {
-			fmt.Fprintln(os.Stderr, err2.Error())
-			os.Exit(1)
+		// TODO: don't pollute brokerapi back into this level
+		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
+		for lastOpResp.State == brokerapi.InProgress {
+			lastOpResp, err = broker.LastOperation(serviceID, planID, instanceID)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+				os.Exit(1)
+			}
+			fmt.Println(lastOpResp.State, lastOpResp.Description)
 		}
-		fmt.Println(lastOpResp.State, lastOpResp.Description)
 	}
 	fmt.Println("deprovision: done")
 }
