@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"time"
 
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf/brokerapi"
@@ -62,6 +63,7 @@ func main() {
 	instanceID := uuid.New()
 	bindingID := uuid.New()
 
+	time.Sleep(1 * time.Second)
 	// TODO - store allocated instanceID into local DB
 	provisioningResp, isAsync, err := broker.Provision(serviceID, planID, instanceID)
 	if err != nil {
@@ -70,20 +72,23 @@ func main() {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("provision:   %v\n", provisioningResp)
 	if isAsync {
+		fmt.Println("provision:   in-progress")
 		// TODO: don't pollute brokerapi back into this level
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
+			time.Sleep(5 * time.Second)
 			lastOpResp, err = broker.LastOperation(serviceID, planID, instanceID)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
 			}
-			fmt.Println(lastOpResp.State, lastOpResp.Description)
+			fmt.Printf("  - %s: %s\n", lastOpResp.State, lastOpResp.Description)
 		}
 	}
+	fmt.Printf("provision:   %v\n", provisioningResp)
 
+	time.Sleep(1 * time.Second)
 	// TODO - store allocated bindingID into local DB
 	bindingResp, err := broker.Bind(serviceID, planID, instanceID, bindingID)
 	if err != nil {
@@ -94,6 +99,7 @@ func main() {
 
 	fmt.Printf("binding:     %v\n", bindingResp.Credentials)
 
+	time.Sleep(1 * time.Second)
 	err = broker.Unbind(serviceID, planID, instanceID, bindingID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -101,6 +107,7 @@ func main() {
 	}
 	fmt.Println("unbinding:   done")
 
+	time.Sleep(1 * time.Second)
 	isAsync, err = broker.Deprovision(serviceID, planID, instanceID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -108,15 +115,17 @@ func main() {
 	}
 
 	if isAsync {
+		fmt.Println("deprovision: in-progress")
 		// TODO: don't pollute brokerapi back into this level
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
 			lastOpResp, err = broker.LastOperation(serviceID, planID, instanceID)
+			time.Sleep(5 * time.Second)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
 			}
-			fmt.Println(lastOpResp.State, lastOpResp.Description)
+			fmt.Printf("  - %s: %s\n", lastOpResp.State, lastOpResp.Description)
 		}
 	}
 	fmt.Println("deprovision: done")
