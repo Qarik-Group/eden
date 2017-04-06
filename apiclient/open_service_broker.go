@@ -59,8 +59,8 @@ func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogRespon
 }
 
 // Provision attempts to provision a new service instance
-func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string) (provisioningResp *brokerapi.ProvisioningResponse, err error) {
-	url := fmt.Sprintf("%s/v2/service_instances/%s", broker.url, instanceID)
+func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string) (provisioningResp *brokerapi.ProvisioningResponse, isAsync bool, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s?accepts_incomplete=true", broker.url, instanceID)
 	details := brokerapi.ProvisionDetails{
 		ServiceID:        serviceID,
 		PlanID:           planID,
@@ -71,11 +71,11 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 
 	buffer := &bytes.Buffer{}
 	if err = json.NewEncoder(buffer).Encode(details); err != nil {
-		return nil, errwrap.Wrapf("Cannot encode provisioning details: {{err}}", err)
+		return nil, false, errwrap.Wrapf("Cannot encode provisioning details: {{err}}", err)
 	}
 	req, err := http.NewRequest("PUT", url, buffer)
 	if err != nil {
-		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		return nil, false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(broker.username, broker.password)
@@ -83,18 +83,21 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+		return nil, false, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
 	}
 	defer resp.Body.Close()
 
 	resBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+		return nil, false, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
 	}
 	provisioningResp = &brokerapi.ProvisioningResponse{}
 	err = json.Unmarshal(resBody, provisioningResp)
 	if err != nil {
-		return nil, errwrap.Wrapf("Failed unmarshalling provisioning response: {{err}}", err)
+		return nil, false, errwrap.Wrapf("Failed unmarshalling provisioning response: {{err}}", err)
+	}
+	if resp.StatusCode == http.StatusAccepted {
+		isAsync = true
 	}
 	return
 }

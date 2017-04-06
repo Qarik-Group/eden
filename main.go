@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/jessevdk/go-flags"
 	"github.com/pborman/uuid"
 	"github.com/starkandwayne/eden-cli/apiclient"
 	edenconfig "github.com/starkandwayne/eden-cli/config"
@@ -28,13 +27,13 @@ type EdenOpts struct {
 func main() {
 	rand.Seed(5000)
 
-	var opts EdenOpts
-	args, err := flags.Parse(&opts)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
-	}
-	fmt.Printf("%#v\n", args)
+	// var opts EdenOpts
+	// args, err := flags.Parse(&opts)
+	// if err != nil {
+	// 	fmt.Fprintln(os.Stderr, err.Error())
+	// 	os.Exit(1)
+	// }
+	// fmt.Printf("%#v\n", args)
 
 	// TODO: replace with fetching same data from "args" above
 	broker := apiclient.NewOpenServiceBrokerFromBrokerEnv(edenconfig.BrokerEnv())
@@ -62,19 +61,24 @@ func main() {
 	instanceID := uuid.New()
 	bindingID := uuid.New()
 
-	provisioningResp, err := broker.Provision(serviceID, planID, instanceID)
+	// TODO - store allocated instanceID into local DB
+	provisioningResp, isAsync, err := broker.Provision(serviceID, planID, instanceID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	// TODO - update local DB with status
 
 	fmt.Printf("%#v\n", provisioningResp)
+	fmt.Printf("is async = %v\n", isAsync)
 
+	// TODO - store allocated bindingID into local DB
 	bindingResp, err := broker.Bind(serviceID, planID, instanceID, bindingID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
+	// TODO - update local DB with status
 
 	fmt.Printf("%#v\n", bindingResp)
 
