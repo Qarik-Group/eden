@@ -138,3 +138,45 @@ func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID s
 	}
 	return
 }
+
+// Unbind destroys a set of credentials to access the service instance
+func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID string) (err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s/service_bindings/%s?service_id=%s&plan_id=%s",
+		broker.url, instanceID, bindingID, serviceID, planID)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+	return
+}
+
+// Deprovision destroys the service instance
+func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID string) (err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s?service_id=%s&plan_id=%s",
+		broker.url, instanceID, serviceID, planID)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+	return
+}
