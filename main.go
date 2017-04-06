@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 
+	"github.com/pborman/uuid"
 	"github.com/starkandwayne/eden-cli/apiclient"
 	edenconfig "github.com/starkandwayne/eden-cli/config"
 )
@@ -20,9 +21,26 @@ func main() {
 		os.Exit(1)
 	}
 
+	var serviceID string
+	var planID string
 	for _, service := range catalogResp.Services {
+		if serviceID == "" {
+			serviceID = service.ID
+		}
 		for _, plan := range service.Plans {
+			if planID == "" {
+				planID = plan.ID
+			}
 			fmt.Println(service.Name, "-", plan.Name, "-", plan.Description)
 		}
 	}
+
+	instanceID := uuid.New()
+	provisioningResp, err := broker.Provision(serviceID, planID, instanceID)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("%#v\n", provisioningResp)
 }

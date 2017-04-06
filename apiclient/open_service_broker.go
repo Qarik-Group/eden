@@ -1,6 +1,7 @@
 package apiclient
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -52,7 +53,47 @@ func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogRespon
 	catalogResp = &brokerapi.CatalogResponse{}
 	err = json.Unmarshal(resBody, catalogResp)
 	if err != nil {
-		return nil, errwrap.Wrapf("Failed unmarshalling /v2/catalog response: {{err}}", err)
+		return nil, errwrap.Wrapf("Failed unmarshalling catalog response: {{err}}", err)
+	}
+	return
+}
+
+// Provision attempts to provision a new service instance
+func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string) (provisioningResp *brokerapi.ProvisioningResponse, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s", broker.url, instanceID)
+	details := brokerapi.ProvisionDetails{
+		ServiceID:        serviceID,
+		PlanID:           planID,
+		OrganizationGUID: "eden-unknown-guid",
+		SpaceGUID:        "eden-unknown-space",
+	}
+
+	buffer := &bytes.Buffer{}
+	if err = json.NewEncoder(buffer).Encode(details); err != nil {
+		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req, err := http.NewRequest("PUT", url, buffer)
+	if err != nil {
+		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+	provisioningResp = &brokerapi.ProvisioningResponse{}
+	err = json.Unmarshal(resBody, provisioningResp)
+	if err != nil {
+		return nil, errwrap.Wrapf("Failed unmarshalling provisioning response: {{err}}", err)
 	}
 	return
 }
