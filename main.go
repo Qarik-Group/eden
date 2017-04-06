@@ -70,8 +70,7 @@ func main() {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("provision: %#v\n", provisioningResp)
-	fmt.Printf("provision is async = %v\n", isAsync)
+	fmt.Printf("provision:   %v\n", provisioningResp)
 	if isAsync {
 		// TODO: don't pollute brokerapi back into this level
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
@@ -93,21 +92,20 @@ func main() {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("binding: %#v\n", bindingResp)
+	fmt.Printf("binding:     %v\n", bindingResp.Credentials)
 
 	err = broker.Unbind(serviceID, planID, instanceID, bindingID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	fmt.Println("unbinding: done")
+	fmt.Println("unbinding:   done")
 
 	isAsync, err = broker.Deprovision(serviceID, planID, instanceID)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
-	fmt.Printf("deprovision is async = %v\n", isAsync)
 
 	if isAsync {
 		// TODO: don't pollute brokerapi back into this level
