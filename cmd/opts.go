@@ -21,4 +21,5 @@ type EdenOpts struct {
 	Provision ProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
 }
 
+// Opts carries all the user provided options (from flags or env vars)
 var Opts EdenOpts

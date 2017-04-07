@@ -16,6 +16,7 @@ type OpenServiceBroker struct {
 	url      string
 	username string
 	password string
+	catalog  *brokerapi.CatalogResponse
 }
 
 // NewOpenServiceBroker constructs OpenServiceBroker
@@ -29,32 +30,34 @@ func NewOpenServiceBroker(url, client, clientSecret string) *OpenServiceBroker {
 
 // Catalog fetches the available service catalog from remote broker
 func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogResponse, err error) {
-	url := fmt.Sprintf("%s/v2/catalog", broker.url)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.SetBasicAuth(broker.username, broker.password)
+	if broker.catalog == nil {
+		url := fmt.Sprintf("%s/v2/catalog", broker.url)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.SetBasicAuth(broker.username, broker.password)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
-	}
-	defer resp.Body.Close()
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+		}
+		defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
-	}
+		resBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+		}
 
-	catalogResp = &brokerapi.CatalogResponse{}
-	err = json.Unmarshal(resBody, catalogResp)
-	if err != nil {
-		return nil, errwrap.Wrapf("Failed unmarshalling catalog response: {{err}}", err)
+		broker.catalog = &brokerapi.CatalogResponse{}
+		err = json.Unmarshal(resBody, broker.catalog)
+		if err != nil {
+			return nil, errwrap.Wrapf("Failed unmarshalling catalog response: {{err}}", err)
+		}
 	}
-	return
+	return broker.catalog, nil
 }
 
 // Provision attempts to provision a new service instance
@@ -216,4 +219,19 @@ func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID str
 	}
 
 	return
+}
+
+// FindServiceByNameOrID looks thru all services in catalog for one that has
+// a name or ID matching 'nameOrID'
+func (broker *OpenServiceBroker) FindServiceByNameOrID(nameOrID string) (*brokerapi.Service, error) {
+	catalog, err := broker.Catalog()
+	if err != nil {
+		return nil, errwrap.Wrapf("Could not fetch catalog: {{err}}", err)
+	}
+	for _, service := range catalog.Services {
+		if service.ID == nameOrID || service.Name == nameOrID {
+			return &service, nil
+		}
+	}
+	return nil, fmt.Errorf("No service has name or ID '%s'", nameOrID)
 }
