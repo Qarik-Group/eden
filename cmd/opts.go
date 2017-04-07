@@ -17,8 +17,8 @@ type EdenOpts struct {
 
 	Broker BrokerOpts `group:"Broker Options"`
 
-	Catalog   CmdCatalogOpts   `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
-	Provision CmdProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
+	Catalog   CatalogOpts   `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
+	Provision ProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
 }
 
 var Opts EdenOpts

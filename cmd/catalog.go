@@ -7,10 +7,12 @@ import (
 	"github.com/starkandwayne/eden-cli/apiclient"
 )
 
-type CmdCatalogOpts struct {
+// CatalogOpts represents the 'catalog' command
+type CatalogOpts struct {
 }
 
-func (c CmdCatalogOpts) Execute(_ []string) (err error) {
+// Execute is callback from go-flags.Commander interface
+func (c CatalogOpts) Execute(_ []string) (err error) {
 	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 
 	catalogResp, err := broker.Catalog()
