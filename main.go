@@ -32,7 +32,6 @@ func main() {
 	var opts EdenOpts
 	_, err := flags.Parse(&opts)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 	fmt.Printf("%#v\n", opts)
