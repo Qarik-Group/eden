@@ -1,0 +1,24 @@
+package cmd
+
+// BrokerOpts describes subset of flags/options for selecting target service broker API
+type BrokerOpts struct {
+	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
+	ClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"EDEN_BROKER_CLIENT" required:"true"`
+	ClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"EDEN_BROKER_CLIENT_SECRET" required:"true"`
+}
+
+// EdenOpts describes the flags/options for the CLI
+type EdenOpts struct {
+	// Slice of bool will append 'true' each time the option
+	// is encountered (can be set multiple times, like -vvv)
+	Verbose []bool `short:"v" long:"verbose" description:"Show verbose debug information"   env:"EDEN_TRACE"`
+
+	InstanceName string `short:"i" long:"instance" description:"Service instance name"      env:"EDEN_SERVICE"`
+
+	Broker BrokerOpts `group:"Broker Options"`
+
+	Catalog   CmdCatalogOpts   `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
+	Provision CmdProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
+}
+
+var Opts EdenOpts
