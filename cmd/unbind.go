@@ -34,7 +34,7 @@ func (c UnbindOpts) Execute(_ []string) (err error) {
 
 	err = broker.Unbind(service.ID, plan.ID, instanceID, c.BindingID)
 	if err != nil {
-		return errwrap.Wrapf("Failed to bind to service instance {{err}}", err)
+		return errwrap.Wrapf("Failed to unbind to service instance {{err}}", err)
 	}
   // TODO - remove allocated bindingIDs from local DB
 

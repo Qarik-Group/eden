@@ -17,10 +17,11 @@ type EdenOpts struct {
 
 	Broker BrokerOpts `group:"Broker Options"`
 
-	Catalog   CatalogOpts   `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
-	Provision ProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
-	Bind      BindOpts      `command:"bind" alias:"b" description:"Generate credentials for service instance"`
-	Unbind    UnbindOpts    `command:"unbind" alias:"u" description:"Remove credentials for service instance"`
+	Catalog     CatalogOpts     `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
+	Provision   ProvisionOpts   `command:"provision" alias:"p" description:"Create new service instance"`
+	Bind        BindOpts        `command:"bind" alias:"b" description:"Generate credentials for service instance"`
+	Unbind      UnbindOpts      `command:"unbind" alias:"u" description:"Remove credentials for service instance"`
+	Deprovision DeprovisionOpts `command:"deprovision" alias:"d" description:"Destroy service instance"`
 }
 
 // Opts carries all the user provided options (from flags or env vars)
