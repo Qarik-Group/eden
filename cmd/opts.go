@@ -11,14 +11,15 @@ type BrokerOpts struct {
 type EdenOpts struct {
 	// Slice of bool will append 'true' each time the option
 	// is encountered (can be set multiple times, like -vvv)
-	Verbose []bool `short:"v" long:"verbose" description:"Show verbose debug information"   env:"EDEN_TRACE"`
+	Verbose []bool `short:"v" long:"verbose" description:"Show verbose debug information" env:"EDEN_TRACE"`
 
-	InstanceName string `short:"i" long:"instance" description:"Service instance name"      env:"EDEN_SERVICE"`
+	InstanceName string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_SERVICE"`
 
 	Broker BrokerOpts `group:"Broker Options"`
 
 	Catalog   CatalogOpts   `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
 	Provision ProvisionOpts `command:"provision" alias:"p" description:"Create new service instance"`
+	Bind      BindOpts      `command:"bind" alias:"b" description:"Generate credentials for service instance"`
 }
 
 // Opts carries all the user provided options (from flags or env vars)
