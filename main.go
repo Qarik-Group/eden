@@ -12,6 +12,13 @@ import (
 	"github.com/starkandwayne/eden-cli/apiclient"
 )
 
+// BrokerOpts describes subset of flags/options for selecting target service broker API
+type BrokerOpts struct {
+	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
+	ClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"EDEN_BROKER_CLIENT" required:"true"`
+	ClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"EDEN_BROKER_CLIENT_SECRET" required:"true"`
+}
+
 // EdenOpts describes the flags/options for the CLI
 type EdenOpts struct {
 	// Slice of bool will append 'true' each time the option
@@ -21,9 +28,7 @@ type EdenOpts struct {
 	// Example of a value name
 	ServiceName string `short:"s" long:"service" description:"Service instance name"                        env:"EDEN_SERVICE"`
 
-	BrokerURLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
-	BrokerClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"EDEN_BROKER_CLIENT" required:"true"`
-	BrokerClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"EDEN_BROKER_CLIENT_SECRET" required:"true"`
+	Broker BrokerOpts `group:"Broker Options"`
 }
 
 func main() {
@@ -36,7 +41,7 @@ func main() {
 	}
 	fmt.Printf("%#v\n", opts)
 
-	broker := apiclient.NewOpenServiceBroker(opts.BrokerURLOpt, opts.BrokerClientOpt, opts.BrokerClientSecretOpt)
+	broker := apiclient.NewOpenServiceBroker(opts.Broker.URLOpt, opts.Broker.ClientOpt, opts.Broker.ClientSecretOpt)
 
 	catalogResp, err := broker.Catalog()
 	if err != nil {
