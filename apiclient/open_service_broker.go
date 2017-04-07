@@ -235,3 +235,17 @@ func (broker *OpenServiceBroker) FindServiceByNameOrID(nameOrID string) (*broker
 	}
 	return nil, fmt.Errorf("No service has name or ID '%s'", nameOrID)
 }
+
+// FindPlanByNameOrID looks thru all plans for a service for one that has
+// a name or ID matching 'nameOrID'. Defaults to first plan if 'nameOrID' is empty.
+func (broker *OpenServiceBroker) FindPlanByNameOrID(service *brokerapi.Service, nameOrID string) (*brokerapi.ServicePlan, error) {
+	if nameOrID == "" {
+		return &service.Plans[0], nil
+	}
+	for _, plan := range service.Plans {
+		if plan.ID == nameOrID || plan.Name == nameOrID {
+			return &plan, nil
+		}
+	}
+	return nil, fmt.Errorf("No plan has name or ID '%s' within service '%s'", nameOrID, service.Name)
+}

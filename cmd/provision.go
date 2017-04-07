@@ -25,24 +25,27 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
   if err != nil {
 		return errwrap.Wrapf("Could not find service in catalog: {{err}}", err)
 	}
-	planID := service.Plans[0].ID
+	plan, err := broker.FindPlanByNameOrID(service, c.PlanNameOrID)
+	if err != nil {
+		return errwrap.Wrapf("Could not find plan in service: {{err}}", err)
+	}
 	instanceID := uuid.New()
 
 	// TODO - store allocated instanceID into local DB
-	provisioningResp, isAsync, err := broker.Provision(service.ID, planID, instanceID)
+	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to provision service instance {{err}}", err)
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("provision:   %s\n", instanceID)
+	fmt.Printf("provision:   %s/%s - guid: %s\n", service.Name, plan.Name, instanceID)
 	if isAsync {
 		fmt.Println("provision:   in-progress")
 		// TODO: don't pollute brokerapi back into this level
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
 			time.Sleep(5 * time.Second)
-			lastOpResp, err = broker.LastOperation(service.ID, planID, instanceID)
+			lastOpResp, err = broker.LastOperation(service.ID, plan.ID, instanceID)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
