@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/errwrap"
 	"github.com/pivotal-cf/brokerapi"
-	edenconfig "github.com/starkandwayne/eden-cli/config"
 )
 
 // OpenServiceBroker is the client struct for connecting to remote Open Service Broker API
@@ -19,12 +18,12 @@ type OpenServiceBroker struct {
 	password string
 }
 
-// NewOpenServiceBrokerFromBrokerEnv constructs OpenServiceBroker
-func NewOpenServiceBrokerFromBrokerEnv(brokerEnv *edenconfig.BrokerEnvDiscovery) *OpenServiceBroker {
+// NewOpenServiceBroker constructs OpenServiceBroker
+func NewOpenServiceBroker(url, client, clientSecret string) *OpenServiceBroker {
 	return &OpenServiceBroker{
-		url:      brokerEnv.URL,
-		username: brokerEnv.Username,
-		password: brokerEnv.Password,
+		url:      url,
+		username: client,
+		password: clientSecret,
 	}
 }
 
