@@ -36,7 +36,7 @@ func (c UnbindOpts) Execute(_ []string) (err error) {
 	if err != nil {
 		return errwrap.Wrapf("Failed to unbind to service instance {{err}}", err)
 	}
-  // TODO - remove allocated bindingIDs from local DB
+	Opts.config().UnbindServiceInstance(instanceID, c.BindingID)
 
   fmt.Println("Success")
 	return

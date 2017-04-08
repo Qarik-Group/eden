@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -80,8 +79,19 @@ func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, creden
 		CreatedAt:   time.Now(),
 	}
 	inst.Bindings = append(inst.Bindings, binding)
-	fmt.Printf("%#v\n", inst)
-	fmt.Printf("%#v\n", c)
+	c.Save()
+}
+
+// UnbindServiceInstance removes record of a binding
+func (c FSConfig) UnbindServiceInstance(instanceID, bindingNameOrID string) {
+	_, inst := c.findOrCreateServiceInstance(instanceID)
+	bindings := []fsServiceBinding{}
+	for _, binding := range inst.Bindings {
+		if binding.ID != bindingNameOrID && binding.Name != bindingNameOrID {
+			bindings = append(bindings, binding)
+		}
+	}
+	inst.Bindings = bindings
 	c.Save()
 }
 
