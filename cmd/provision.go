@@ -31,7 +31,10 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 	}
 	instanceID := uuid.New()
   name := fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
-  Opts.config().ProvisionNewServiceInstance(instanceID, name, service.ID, plan.ID, Opts.Broker.URLOpt)
+  Opts.config().ProvisionNewServiceInstance(instanceID, name,
+    service.ID, service.Name,
+    plan.ID, plan.Name,
+    Opts.Broker.URLOpt)
 
 	// TODO - store allocated instanceID into local DB
 	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)

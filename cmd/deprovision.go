@@ -12,41 +12,32 @@ import (
 
 // DeprovisionOpts represents the 'deprovision' command
 type DeprovisionOpts struct {
-	ServiceNameOrID string `short:"s" long:"service-name" description:"Service name/ID from catalog" required:"true"`
-	PlanNameOrID    string `short:"p" long:"plan-name" description:"Plan name/ID from catalog (default: first)"`
 }
 
 // Execute is callback from go-flags.Commander interface
 func (c DeprovisionOpts) Execute(_ []string) (err error) {
-  instanceID := Opts.InstanceName
-  if instanceID == "" {
+  instanceNameOrID := Opts.InstanceName
+  if instanceNameOrID == "" {
     return fmt.Errorf("deprovision command requires --instance [NAME|GUID]")
   }
 
 	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 
-	service, err := broker.FindServiceByNameOrID(c.ServiceNameOrID)
-  if err != nil {
-		return errwrap.Wrapf("Could not find service in catalog: {{err}}", err)
-	}
-	plan, err := broker.FindPlanByNameOrID(service, c.PlanNameOrID)
-	if err != nil {
-		return errwrap.Wrapf("Could not find plan in service: {{err}}", err)
-	}
+	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
-	isAsync, err := broker.Deprovision(service.ID, plan.ID, instanceID)
+	isAsync, err := broker.Deprovision(instance.ServiceID, instance.PlanID, instance.ID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to deprovision service instance {{err}}", err)
 	}
 
-	fmt.Printf("deprovision: %s/%s - guid: %s\n", service.Name, plan.Name, instanceID)
+	fmt.Printf("deprovision: %s/%s - guid: %s\n", instance.ServiceName, instance.PlanName, instance.ID)
 	if isAsync {
 		fmt.Println("deprovision: in-progress")
 		// TODO: don't pollute brokerapi back into this level
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
 			time.Sleep(5 * time.Second)
-			lastOpResp, err = broker.LastOperation(service.ID, plan.ID, instanceID)
+			lastOpResp, err = broker.LastOperation(instance.ServiceID, instance.PlanID, instance.ID)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
@@ -54,7 +45,7 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
 			fmt.Printf("deprovision: %s - %s\n", lastOpResp.State, lastOpResp.Description)
 		}
 	}
-	Opts.config().DeprovisionServiceInstance(instanceID)
+	Opts.config().DeprovisionServiceInstance(instance.ID)
 	fmt.Println("deprovision: done")
 
 	return
