@@ -30,6 +30,7 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return errwrap.Wrapf("Could not find plan in service: {{err}}", err)
 	}
 	instanceID := uuid.New()
+  Opts.config().ProvisionNewServiceInstance(instanceID, "", service.ID, plan.ID, Opts.Broker.URLOpt)
 
 	// TODO - store allocated instanceID into local DB
 	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
