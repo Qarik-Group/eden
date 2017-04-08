@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -13,14 +12,14 @@ type FSConfig struct {
 	path string
 	fs   boshsys.FileSystem
 
-	schema fsServiceInstances
+	schema FSServiceInstances
 }
 
-type fsServiceInstances struct {
-	ServiceInstances []fsServiceInstance `yaml:"service_instances"`
+type FSServiceInstances struct {
+	ServiceInstances []FSServiceInstance `yaml:"service_instances"`
 }
 
-type fsServiceInstance struct {
+type FSServiceInstance struct {
 	ID        string             `yaml:"id"`
 	Name      string             `yaml:"name"`
 	ServiceID string             `yaml:"service_id"`
@@ -39,7 +38,7 @@ type fsServiceBinding struct {
 }
 
 func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {
-	var schema fsServiceInstances
+	var schema FSServiceInstances
 
 	absPath, err := fs.ExpandPath(path)
 	if err != nil {
@@ -61,15 +60,19 @@ func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {
 	return FSConfig{path: absPath, fs: fs, schema: schema}, nil
 }
 
-func (c FSConfig) ProvisionNewServiceInstance(id, name, serviceID, planID, brokerURL string) fsServiceInstance {
+// ProvisionNewServiceInstance initialize new FSServiceInstance
+func (c FSConfig) ProvisionNewServiceInstance(id, name, serviceID, planID, brokerURL string) FSServiceInstance {
 	_, inst := c.findOrCreateServiceInstanceByIDOrName(id, name)
 	inst.ServiceID = serviceID
 	inst.PlanID = planID
 	inst.BrokerURL = brokerURL
-	fmt.Printf("%#v\n", inst)
-	fmt.Printf("%#v\n", c)
 	c.Save()
 	return *inst
+}
+
+// ServiceInstances returns the list of service instances created locally
+func (c FSConfig) ServiceInstances() FSServiceInstances {
+	return c.schema
 }
 
 func (c FSConfig) Save() error {
@@ -86,7 +89,7 @@ func (c FSConfig) Save() error {
 	return nil
 }
 
-func (c *FSConfig) findOrCreateServiceInstance(idOrName string) (int, *fsServiceInstance) {
+func (c *FSConfig) findOrCreateServiceInstance(idOrName string) (int, *FSServiceInstance) {
 	if idOrName != "" {
 		for i, instance := range c.schema.ServiceInstances {
 			if idOrName == instance.ID || idOrName == instance.Name {
@@ -98,7 +101,7 @@ func (c *FSConfig) findOrCreateServiceInstance(idOrName string) (int, *fsService
 	return c.appendNewServiceInstanceWithID(idOrName)
 }
 
-func (c *FSConfig) findOrCreateServiceInstanceByIDOrName(id, name string) (int, *fsServiceInstance) {
+func (c *FSConfig) findOrCreateServiceInstanceByIDOrName(id, name string) (int, *FSServiceInstance) {
 	for i, instance := range c.schema.ServiceInstances {
 		if id == instance.ID || (name != "" && name == instance.Name) {
 			return i, &instance
@@ -110,8 +113,8 @@ func (c *FSConfig) findOrCreateServiceInstanceByIDOrName(id, name string) (int, 
 	return i, instance
 }
 
-func (c *FSConfig) appendNewServiceInstanceWithID(id string) (int, *fsServiceInstance) {
-	instance := fsServiceInstance{ID: id, CreatedAt: time.Now()}
+func (c *FSConfig) appendNewServiceInstanceWithID(id string) (int, *FSServiceInstance) {
+	instance := FSServiceInstance{ID: id, CreatedAt: time.Now()}
 	c.schema.ServiceInstances = append(c.schema.ServiceInstances, instance)
 	return len(c.schema.ServiceInstances) - 1, &c.schema.ServiceInstances[len(c.schema.ServiceInstances)-1]
 }
@@ -122,7 +125,7 @@ func (c FSConfig) deepCopy() FSConfig {
 		panic("serializing config schema")
 	}
 
-	var schema fsServiceInstances
+	var schema FSServiceInstances
 
 	err = yaml.Unmarshal(bytes, &schema)
 	if err != nil {
