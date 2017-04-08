@@ -33,10 +33,10 @@ type FSServiceInstance struct {
 
 // ServiceBinding represents a binding with credentials
 type fsServiceBinding struct {
-	ID          string      `yaml:"id"`
-	Name        string      `yaml:"name"`
-	Credentials interface{} `yaml:"credentials"`
-	CreatedAt   time.Time   `yaml:"created_at"`
+	ID          string                 `yaml:"id"`
+	Name        string                 `yaml:"name"`
+	Credentials map[string]interface{} `yaml:"credentials"`
+	CreatedAt   time.Time              `yaml:"created_at"`
 }
 
 func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {
@@ -80,8 +80,13 @@ func (c FSConfig) FindServiceInstance(idOrName string) FSServiceInstance {
 }
 
 // BindServiceInstance records a new bindingID
-func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, credentials interface{}) {
+func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, rawCredentials interface{}) {
 	_, inst := c.findOrCreateServiceInstance(instanceID)
+
+	credentials := map[string]interface{}{}
+	for key, value := range rawCredentials.(map[interface{}]interface{}) {
+		credentials[key.(string)] = value
+	}
 	binding := fsServiceBinding{
 		ID:          bindingID,
 		Name:        name,
