@@ -20,11 +20,9 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
   if instanceNameOrID == "" {
     return fmt.Errorf("deprovision command requires --instance [NAME|GUID]")
   }
-
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
-
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
+	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 	isAsync, err := broker.Deprovision(instance.ServiceID, instance.PlanID, instance.ID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to deprovision service instance {{err}}", err)

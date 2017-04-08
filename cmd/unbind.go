@@ -18,10 +18,9 @@ func (c UnbindOpts) Execute(_ []string) (err error) {
   if instanceNameOrID == "" {
     return fmt.Errorf("unbind command requires --instance [NAME|GUID]")
   }
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
-
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
+	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 	err = broker.Unbind(instance.ServiceID, instance.PlanID, instance.ID, c.BindingID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to unbind to service instance {{err}}", err)

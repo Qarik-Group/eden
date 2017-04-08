@@ -19,9 +19,9 @@ func (c BindOpts) Execute(_ []string) (err error) {
   if instanceNameOrID == "" {
     return fmt.Errorf("bind command requires --instance [NAME|GUID]")
   }
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
-
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
+
+	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 
   bindingID := uuid.New()
 	bindingName := fmt.Sprintf("%s-%s", instance.ServiceName, bindingID)
