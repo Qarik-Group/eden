@@ -118,8 +118,8 @@ func (c FSConfig) DeprovisionServiceInstance(instanceNameOrID string) {
 }
 
 // ServiceInstances returns the list of service instances created locally
-func (c FSConfig) ServiceInstances() FSServiceInstances {
-	return c.schema
+func (c FSConfig) ServiceInstances() []*FSServiceInstance {
+	return c.schema.ServiceInstances
 }
 
 // Save configuration/data to file
