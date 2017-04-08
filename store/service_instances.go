@@ -95,6 +95,18 @@ func (c FSConfig) UnbindServiceInstance(instanceID, bindingNameOrID string) {
 	c.Save()
 }
 
+// DeprovisionServiceInstance removes record of an instance
+func (c FSConfig) DeprovisionServiceInstance(instanceNameOrID string) {
+	instances := []*FSServiceInstance{}
+	for _, instance := range c.schema.ServiceInstances {
+		if instance.ID != instanceNameOrID && instance.Name != instanceNameOrID {
+			instances = append(instances, instance)
+		}
+	}
+	c.schema.ServiceInstances = instances
+	c.Save()
+}
+
 // ServiceInstances returns the list of service instances created locally
 func (c FSConfig) ServiceInstances() FSServiceInstances {
 	return c.schema

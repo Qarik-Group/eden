@@ -38,7 +38,6 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
 	if err != nil {
 		return errwrap.Wrapf("Failed to deprovision service instance {{err}}", err)
 	}
-	// TODO - update local DB with status
 
 	fmt.Printf("deprovision: %s/%s - guid: %s\n", service.Name, plan.Name, instanceID)
 	if isAsync {
@@ -55,6 +54,7 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
 			fmt.Printf("deprovision: %s - %s\n", lastOpResp.State, lastOpResp.Description)
 		}
 	}
+	Opts.config().DeprovisionServiceInstance(instanceID)
 	fmt.Println("deprovision: done")
 
 	return
