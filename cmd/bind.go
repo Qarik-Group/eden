@@ -34,12 +34,14 @@ func (c BindOpts) Execute(_ []string) (err error) {
 	}
 
   bindingID := uuid.New()
+	bindingName := fmt.Sprintf("%s-%s", service.Name, bindingID)
+
 	// TODO - store allocated bindingIDs into local DB
 	bindingResp, err := broker.Bind(service.ID, plan.ID, instanceID, bindingID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to bind to service instance {{err}}", err)
 	}
-	// TODO - update local DB with status
+	Opts.config().BindServiceInstance(instanceID, bindingID, bindingName, bindingResp.Credentials)
 
   fmt.Printf("%# v\n", pretty.Formatter(bindingResp))
 	return

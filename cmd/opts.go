@@ -36,7 +36,7 @@ type EdenOpts struct {
 // Opts carries all the user provided options (from flags or env vars)
 var Opts EdenOpts
 
-// TODO need to move this into separate struct; bosh-cli has cmd.BasicDeps
+// TODO: need to move this into separate struct; bosh-cli has cmd.BasicDeps
 func (opts EdenOpts) fs() boshsys.FileSystem {
 	logger := boshlog.NewLogger(boshlog.LevelInfo)
 	return boshsys.NewOsFileSystem(logger)

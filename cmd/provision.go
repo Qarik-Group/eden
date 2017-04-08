@@ -30,7 +30,7 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return errwrap.Wrapf("Could not find plan in service: {{err}}", err)
 	}
 	instanceID := uuid.New()
-  name := fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, uuid.New())
+  name := fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
   Opts.config().ProvisionNewServiceInstance(instanceID, name, service.ID, plan.ID, Opts.Broker.URLOpt)
 
 	// TODO - store allocated instanceID into local DB
