@@ -29,9 +29,14 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 	if err != nil {
 		return errwrap.Wrapf("Could not find plan in service: {{err}}", err)
 	}
+
+	instanceName := Opts.Instance.NameOrID
 	instanceID := uuid.New()
-  name := fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
-  Opts.config().ProvisionNewServiceInstance(instanceID, name,
+  if instanceName == "" {
+    instanceName = fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
+  }
+
+  Opts.config().ProvisionNewServiceInstance(instanceID, instanceName,
     service.ID, service.Name,
     plan.ID, plan.Name,
     Opts.Broker.URLOpt)
@@ -43,7 +48,7 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 	}
 	// TODO - update local DB with status
 
-	fmt.Printf("provision:   %s/%s - guid: %s\n", service.Name, plan.Name, instanceID)
+	fmt.Printf("provision:   %s/%s - name: %s\n", service.Name, plan.Name, instanceName)
 	if isAsync {
 		fmt.Println("provision:   in-progress")
 		// TODO: don't pollute brokerapi back into this level
