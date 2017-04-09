@@ -84,8 +84,13 @@ func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, rawCre
 	_, inst := c.findOrCreateServiceInstance(instanceID)
 
 	credentials := map[string]interface{}{}
-	for key, value := range rawCredentials.(map[interface{}]interface{}) {
-		credentials[key.(string)] = value
+	switch creds := rawCredentials.(type) {
+	case map[string]interface{}:
+		credentials = creds
+	case map[interface{}]interface{}:
+		for key, value := range creds {
+			credentials[key.(string)] = value
+		}
 	}
 	binding := fsServiceBinding{
 		ID:          bindingID,
