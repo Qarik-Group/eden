@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jessevdk/go-flags"
-	edencmd "github.com/starkandwayne/eden-cli/cmd"
+	edencmd "github.com/starkandwayne/eden/cmd"
 )
 
 func main() {

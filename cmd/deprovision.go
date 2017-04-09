@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/errwrap"
 	"github.com/pivotal-cf/brokerapi"
-	"github.com/starkandwayne/eden-cli/apiclient"
+	"github.com/starkandwayne/eden/apiclient"
 )
 
 // DeprovisionOpts represents the 'deprovision' command

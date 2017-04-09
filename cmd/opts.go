@@ -3,7 +3,7 @@ package cmd
 import (
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	edenstore "github.com/starkandwayne/eden-cli/store"
+	edenstore "github.com/starkandwayne/eden/store"
 )
 
 // BrokerOpts describes subset of flags/options for selecting target service broker API

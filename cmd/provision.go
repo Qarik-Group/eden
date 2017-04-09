@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/errwrap"
 	"github.com/pborman/uuid"
 	"github.com/pivotal-cf/brokerapi"
-	"github.com/starkandwayne/eden-cli/apiclient"
+	"github.com/starkandwayne/eden/apiclient"
 )
 
 // ProvisionOpts represents the 'provision' command

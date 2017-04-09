@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/starkandwayne/eden-cli/apiclient"
+	"github.com/starkandwayne/eden/apiclient"
 )
 
 // CatalogOpts represents the 'catalog' command
