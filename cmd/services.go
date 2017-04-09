@@ -14,7 +14,7 @@ type ServicesOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c ServicesOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.InstanceName
+  instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID != "" {
     return c.showService(instanceNameOrID)
   }

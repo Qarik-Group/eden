@@ -16,7 +16,7 @@ type DeprovisionOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c DeprovisionOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.InstanceName
+  instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
     return fmt.Errorf("deprovision command requires --instance [NAME|GUID]")
   }

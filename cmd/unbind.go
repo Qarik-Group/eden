@@ -14,7 +14,7 @@ type UnbindOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c UnbindOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.InstanceName
+  instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
     return fmt.Errorf("unbind command requires --instance [NAME|GUID]")
   }

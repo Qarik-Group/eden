@@ -15,7 +15,7 @@ type BindOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c BindOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.InstanceName
+  instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
     return fmt.Errorf("bind command requires --instance [NAME|GUID]")
   }

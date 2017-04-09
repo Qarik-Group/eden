@@ -6,6 +6,11 @@ import (
 	edenstore "github.com/starkandwayne/eden/store"
 )
 
+// InstanceOpts describes a target service instance
+type InstanceOpts struct {
+	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_SERVICE"`
+}
+
 // BrokerOpts describes subset of flags/options for selecting target service broker API
 type BrokerOpts struct {
 	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
@@ -21,9 +26,8 @@ type EdenOpts struct {
 
 	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDENT_CONFIG" default:"~/.eden/config"`
 
-	InstanceName string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_SERVICE"`
-
-	Broker BrokerOpts `group:"Broker Options"`
+	Instance InstanceOpts `group:"Service Instance Options"`
+	Broker   BrokerOpts   `group:"Broker Options"`
 
 	Catalog     CatalogOpts     `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
 	Services    ServicesOpts    `command:"services" alias:"s" description:"List service instances (stored in config file)"`
