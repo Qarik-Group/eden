@@ -16,9 +16,10 @@ type UnbindOpts struct {
 func (c UnbindOpts) Execute(_ []string) (err error) {
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("unbind command requires --instance [NAME|GUID]")
+    return fmt.Errorf("unbind command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
   }
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
+	// TODO: convert c.BindingID into ID if its a name
 
 	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
 	err = broker.Unbind(instance.ServiceID, instance.PlanID, instance.ID, c.BindingID)

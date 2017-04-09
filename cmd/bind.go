@@ -17,7 +17,7 @@ type BindOpts struct {
 func (c BindOpts) Execute(_ []string) (err error) {
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("bind command requires --instance [NAME|GUID]")
+    return fmt.Errorf("bind command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
   }
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
