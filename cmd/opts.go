@@ -8,7 +8,7 @@ import (
 
 // InstanceOpts describes a target service instance
 type InstanceOpts struct {
-	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_SERVICE"`
+	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_INSTANCE"`
 }
 
 // BrokerOpts describes subset of flags/options for selecting target service broker API
