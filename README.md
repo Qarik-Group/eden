@@ -21,15 +21,12 @@ eden catalog
 To create (`provision`) a new service instance, and to generate a set of access credentials (`bind`):
 
 ```
-eden provision -s servicename -p planname -i name
-eden bind -i name
+export EDEN_INSTANCE=my-db-name
+eden provision -s servicename -p planname
+eden bind
 ```
 
-To see the credentials for access:
-
-```
-eden services -i name
-```
+Instead of env vars, you can use CLI flags. See `eden -h` for more details.
 
 ## Install
 
