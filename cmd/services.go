@@ -45,7 +45,8 @@ func (c ServicesOpts) showService(instanceNameOrID string) (err error) {
   if len(inst.Bindings) > 0 {
     binding := inst.Bindings[0]
 
-    b, err := json.MarshalIndent(binding.Credentials, "", "  ")
+    // convert binding.Credentials into nested map[string]map[string]interface{}
+    b, err := json.MarshalIndent(binding.CredentialsJSON(), "", "  ")
   	if err != nil {
   		return errwrap.Wrapf("Could not marshal credentials: {{err}}", err)
   	}

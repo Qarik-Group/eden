@@ -58,7 +58,6 @@ func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {
 			return FSConfig{}, bosherr.WrapError(err, "Unmarshalling config")
 		}
 	}
-
 	return FSConfig{path: absPath, fs: fs, schema: schema}, nil
 }
 
@@ -192,4 +191,35 @@ func (c FSConfig) deepCopy() FSConfig {
 	}
 
 	return FSConfig{path: c.path, fs: c.fs, schema: schema}
+}
+
+// Credentials fixes any map[interface{}]interface{} into map[string]interface{}
+// as expected by JSON marshalling
+func (b fsServiceBinding) CredentialsJSON() map[string]interface{} {
+	return deepCopy(b.Credentials)
+}
+
+func deepCopy(rawInput interface{}) (output map[string]interface{}) {
+	output = map[string]interface{}{}
+	switch input := rawInput.(type) {
+	case map[string]interface{}:
+		for key, rawValue := range input {
+			switch value := rawValue.(type) {
+			case map[interface{}]interface{}:
+				output[key] = deepCopy(value)
+			default:
+				output[key] = value
+			}
+		}
+	case map[interface{}]interface{}:
+		for key, rawValue := range input {
+			switch value := rawValue.(type) {
+			case map[interface{}]interface{}:
+				output[key.(string)] = deepCopy(value)
+			default:
+				output[key.(string)] = value
+			}
+		}
+	}
+	return
 }
