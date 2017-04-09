@@ -5,7 +5,6 @@ import (
 
 	"github.com/hashicorp/errwrap"
 	"github.com/pborman/uuid"
-  "github.com/kr/pretty"
 	"github.com/starkandwayne/eden/apiclient"
 )
 
@@ -33,6 +32,8 @@ func (c BindOpts) Execute(_ []string) (err error) {
 	}
 	Opts.config().BindServiceInstance(instance.ID, bindingID, bindingName, bindingResp.Credentials)
 
-  fmt.Printf("%# v\n", pretty.Formatter(bindingResp))
+	fmt.Println("Success")
+	fmt.Println("")
+	fmt.Printf("Run 'eden credentials -i %s -b %s' to see credentials", instance.Name, bindingName)
 	return
 }

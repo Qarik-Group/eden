@@ -1,11 +1,7 @@
 package cmd
 
 import (
-  "encoding/json"
   "fmt"
-  "os"
-
-  "github.com/hashicorp/errwrap"
 )
 
 // ServicesOpts represents the 'services' command
@@ -40,17 +36,13 @@ func (c ServicesOpts) showService(instanceNameOrID string) (err error) {
   if inst.ServiceID == "" {
     return fmt.Errorf("services --instance [NAME|GUID] was not found")
   }
-  fmt.Printf("%s\t%s\t%s\n", inst.Name,
-    inst.ServiceName, inst.PlanName)
+  fmt.Printf("Instance Name: %s\n", inst.Name)
+  fmt.Printf("Service/Plan:  %s/%s\n", inst.ServiceName, inst.PlanName)
   if len(inst.Bindings) > 0 {
-    binding := inst.Bindings[0]
-
-    // convert binding.Credentials into nested map[string]map[string]interface{}
-    b, err := json.MarshalIndent(binding.CredentialsJSON(), "", "  ")
-  	if err != nil {
-  		return errwrap.Wrapf("Could not marshal credentials: {{err}}", err)
-  	}
-    os.Stdout.Write(b)
+    fmt.Println("Bindings:")
+    for _, binding := range inst.Bindings {
+      fmt.Printf("- %s\n", binding.Name)
+    }
   } else {
     fmt.Println("No bindings.")
   }
