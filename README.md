@@ -26,7 +26,26 @@ eden provision -s servicename -p planname
 eden bind
 ```
 
-Instead of env vars, you can use CLI flags. See `eden -h` for more details.
+To view the credentials for your binding:
+
+```
+eden credentials
+```
+
+To extract a single credentials, say a fully formed `uri`, you can use `eden credentials --attribute uri`:
+
+For example, to provision a PostgreSQL service, generate bindings, and use them immediately with `psql`:
+
+```
+export EDEN_INSTANCE=pg1
+eden provision -s postgresql96
+eden bind
+psql `eden creds -a uri`
+```
+
+### CLI flags and environment variables
+
+In addition to using env vars, you can use CLI flags. See `eden -h` and `eden <command> -h` for more details.
 
 ## Install
 
