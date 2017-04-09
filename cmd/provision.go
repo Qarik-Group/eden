@@ -35,6 +35,10 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
   if instanceName == "" {
     instanceName = fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
   }
+	prexisting := Opts.config().FindServiceInstance(instanceName)
+	if prexisting.ServiceName != "" {
+		return fmt.Errorf("Service instance '%s' already exists", instanceName)
+	}
 
   Opts.config().ProvisionNewServiceInstance(instanceID, instanceName,
     service.ID, service.Name,
