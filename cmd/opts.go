@@ -29,7 +29,7 @@ type EdenOpts struct {
 	Instance InstanceOpts `group:"Service Instance Options"`
 	Broker   BrokerOpts   `group:"Broker Options"`
 
-	Catalog     CatalogOpts     `command:"catalog" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
+	Catalog     CatalogOpts     `command:"catalog" alias:"cat" alias:"c" alias:"inventory" alias:"inv" description:"Show available service catalog"`
 	Services    ServicesOpts    `command:"services" alias:"s" description:"List service instances (stored in config file)"`
 	Provision   ProvisionOpts   `command:"provision" alias:"p" description:"Create new service instance"`
 	Bind        BindOpts        `command:"bind" alias:"b" description:"Generate credentials for service instance"`
