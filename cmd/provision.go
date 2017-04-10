@@ -40,17 +40,14 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return fmt.Errorf("Service instance '%s' already exists", instanceName)
 	}
 
-  Opts.config().ProvisionNewServiceInstance(instanceID, instanceName,
+	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
+	if err != nil {
+		return errwrap.Wrapf("Failed to provision service instance: {{err}}", err)
+	}
+	Opts.config().ProvisionNewServiceInstance(instanceID, instanceName,
     service.ID, service.Name,
     plan.ID, plan.Name,
     Opts.Broker.URLOpt)
-
-	// TODO - store allocated instanceID into local DB
-	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
-	if err != nil {
-		return errwrap.Wrapf("Failed to provision service instance {{err}}", err)
-	}
-	// TODO - update local DB with status
 
 	fmt.Printf("provision:   %s/%s - name: %s\n", service.Name, plan.Name, instanceName)
 	if isAsync {

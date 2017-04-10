@@ -100,6 +100,19 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 	}
 	if resp.StatusCode == http.StatusAccepted {
 		isAsync = true
+	} else if resp.StatusCode == http.StatusCreated {
+		isAsync = false
+	} else {
+		errorResp := &brokerapi.ErrorResponse{}
+		err = json.Unmarshal(resBody, provisioningResp)
+		if err != nil {
+			return nil, false, errwrap.Wrapf("Failed unmarshalling error response: {{err}}", err)
+		}
+		errMsg := fmt.Sprintf("%s: %s", errorResp.Error, errorResp.Description)
+		if errorResp.Error == "" {
+			errMsg = fmt.Sprintf("Unknown internal broker error (%s)", broker.url)
+		}
+		return nil, false, fmt.Errorf(errMsg)
 	}
 	return
 }
