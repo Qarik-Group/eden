@@ -59,7 +59,7 @@ func (c ServicesOpts) showAllServices() (err error) {
 func (c ServicesOpts) showService(instanceNameOrID string) (err error) {
 	inst := Opts.config().FindServiceInstance(instanceNameOrID)
 	if inst.ServiceID == "" {
-		return fmt.Errorf("services --instance [NAME|GUID] was not found")
+		return fmt.Errorf("services --instance '%s' was not found", instanceNameOrID)
 	}
 	fmt.Printf("Instance Name: %s\n", inst.Name)
 	fmt.Printf("Service/Plan:  %s/%s\n", inst.ServiceName, inst.PlanName)
