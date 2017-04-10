@@ -24,9 +24,9 @@ func (c ServicesOpts) showAllServices() (err error) {
     if len(inst.Bindings) > 0 {
       bindingName = inst.Bindings[0].Name
     }
-    fmt.Printf("%s\t%s\t%s\t%s\n", inst.Name,
+    fmt.Printf("%s\t%s\t%s\t%s\t%s\n", inst.Name,
       inst.ServiceName, inst.PlanName,
-      bindingName)
+      bindingName, inst.BrokerURL)
   }
   return
 }
