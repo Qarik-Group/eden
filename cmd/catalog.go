@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	boshtbl "github.com/cloudfoundry/bosh-cli/ui/table"
 	"github.com/starkandwayne/eden/apiclient"
 )
 
@@ -21,6 +22,20 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 		os.Exit(1)
 	}
 
+	table := boshtbl.Table{
+		Content: "catalog",
+
+		Header: []boshtbl.Header{
+			boshtbl.NewHeader("Service Name"),
+			boshtbl.NewHeader("Plan Name"),
+			boshtbl.NewHeader("Description"),
+		},
+
+		SortBy: []boshtbl.ColumnSort{
+			{Column: 1, Asc: true},
+		},
+	}
+
 	var serviceID string
 	var planID string
 	for _, service := range catalogResp.Services {
@@ -31,8 +46,14 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 			if planID == "" {
 				planID = plan.ID
 			}
-			fmt.Println(service.Name, "-", plan.Name, "-", plan.Description)
+			table.Rows = append(table.Rows, []boshtbl.Value{
+				boshtbl.NewValueString(service.Name),
+				boshtbl.NewValueString(plan.Name),
+				boshtbl.NewValueString(plan.Description),
+			})
 		}
 	}
+
+	table.Print(os.Stdout)
 	return
 }
