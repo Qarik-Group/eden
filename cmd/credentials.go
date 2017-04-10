@@ -23,7 +23,7 @@ func (c CredentialsOpts) Execute(_ []string) (err error) {
   }
   inst := Opts.config().FindServiceInstance(instanceNameOrID)
   if inst.ServiceID == "" {
-    return fmt.Errorf("services --instance [NAME|GUID] was not found")
+    return fmt.Errorf("credentials --instance [NAME|GUID] was not found")
   }
   if len(inst.Bindings) > 0 {
     binding := inst.Bindings[0]
