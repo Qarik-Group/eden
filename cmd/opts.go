@@ -29,13 +29,17 @@ type EdenOpts struct {
 	Instance InstanceOpts `group:"Service Instance Options"`
 	Broker   BrokerOpts   `group:"Broker Options"`
 
+	// Broker API commands
 	Catalog     CatalogOpts     `command:"catalog" alias:"cat" alias:"inventory" alias:"inv" description:"Show available service catalog"`
-	Services    ServicesOpts    `command:"services" alias:"s" description:"List service instances (stored in config file)"`
-	Credentials CredentialsOpts `command:"credentials" alias:"creds" alias:"c" description:"Display binding credentials (stored in config file)"`
 	Provision   ProvisionOpts   `command:"provision" alias:"p" description:"Create new service instance"`
 	Bind        BindOpts        `command:"bind" alias:"b" description:"Generate credentials for service instance"`
 	Unbind      UnbindOpts      `command:"unbind" alias:"u" description:"Remove credentials for service instance"`
 	Deprovision DeprovisionOpts `command:"deprovision" alias:"d" description:"Destroy service instance"`
+
+	// Local data commands
+	Services    ServicesOpts    `command:"services" alias:"s" description:"List service instances (stored in config file)"`
+	Credentials CredentialsOpts `command:"credentials" alias:"creds" alias:"c" description:"Display binding credentials (stored in config file)"`
+	Rename      RenameOpts      `command:"rename" description:"Rename service instance (stored in config file)"`
 }
 
 // Opts carries all the user provided options (from flags or env vars)

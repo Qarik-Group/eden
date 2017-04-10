@@ -78,6 +78,13 @@ func (c FSConfig) FindServiceInstance(idOrName string) FSServiceInstance {
 	return *inst
 }
 
+// RenameServiceInstance updates the .Name of a service instance
+func (c FSConfig) RenameServiceInstance(idOrName, newName string) {
+	_, inst := c.findOrCreateServiceInstance(idOrName)
+	inst.Name = newName
+	c.Save()
+}
+
 // BindServiceInstance records a new bindingID
 func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, rawCredentials interface{}) {
 	_, inst := c.findOrCreateServiceInstance(instanceID)

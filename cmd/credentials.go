@@ -9,7 +9,7 @@ import (
   "github.com/hashicorp/errwrap"
 )
 
-// CredentialsOpts represents the 'services' command
+// CredentialsOpts represents the 'credentials' command
 type CredentialsOpts struct {
   BindingID string `short:"b" long:"bind" description:"Binding to display"`
   Attribute string `short:"a" long:"attribute" description:"Only diplay a single attribute from credentials"`
