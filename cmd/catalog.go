@@ -23,7 +23,7 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 	}
 
 	table := boshtbl.Table{
-		Content: "catalog",
+		Content: "services",
 
 		Header: []boshtbl.Header{
 			boshtbl.NewHeader("Service Name"),
