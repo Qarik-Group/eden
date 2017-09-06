@@ -2,6 +2,24 @@
 
 Interact with any Open Service Broker API to discover/provision/bind/unbind/deprovision hundreds of different services.
 
+## Installation
+
+For Ubuntu/Debian:
+
+```
+wget -q -O - https://raw.githubusercontent.com/starkandwayne/homebrew-cf/master/public.key | apt-key add -
+echo "deb http://apt.starkandwayne.com stable main" | tee /etc/apt/sources.list.d/starkandwayne.list
+apt-get update
+apt-get install eden
+```
+
+From source using Golang:
+
+```
+go get -u github.com/starkandwayne/eden
+```
+
+
 ## Usage
 
 Use environment variables to target an Open Service Broker API:
@@ -46,9 +64,3 @@ psql `eden creds -a uri`
 ### CLI flags and environment variables
 
 In addition to using env vars, you can use CLI flags. See `eden -h` and `eden <command> -h` for more details.
-
-## Install
-
-```
-go get -u github.com/starkandwayne/eden
-```
