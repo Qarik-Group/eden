@@ -17,14 +17,16 @@ meta:
   target:   (( param "Please identify the name of the target Concourse CI" ))
   pipeline: (( grab meta.name ))
 
-  image:    starkandwayne/concourse-go
-
   go:
     version: 1.7
     module:  (( concat "github.com/" meta.github.owner "/" meta.github.repo ))
     cmd_module: (( grab meta.go.module ))
     binary:  (( grab meta.github.repo ))
     force_static_binary: false
+
+  image:
+    name: starkandwayne/concourse-go
+    tag: (( grab meta.go.version ))
 
   aws:
     bucket:     (( concat meta.pipeline "-pipeline" ))
@@ -57,6 +59,7 @@ groups:
   - name: (( grab meta.pipeline ))
     jobs:
       - test
+      - test-pr
       - rc
       - shipit
       - major
@@ -76,8 +79,8 @@ jobs:
             image_resource:
               type: docker-image
               source:
-                repository: (( grab meta.image ))
-                tag: (( grab meta.go.version ))
+                repository: (( grab meta.image.name ))
+                tag:        (( grab meta.image.tag ))
             inputs:
               - name: git
                 path: (( concat "gopath/src/" meta.go.module ))
@@ -86,6 +89,71 @@ jobs:
               args: []
             params:
               MODULE: (( grab meta.go.module ))
+        on_failure:
+          put: notify
+          params:
+            channel:  (( grab meta.slack.channel ))
+            username: (( grab meta.slack.username ))
+            icon_url: (( grab meta.slack.icon ))
+            text:    '(( concat meta.slack.fail_url " " meta.pipeline ": test job failed" ))'
+
+  - name: test-pr
+    public: true
+    serial: true
+    plan:
+      - do:
+        - { get: git-pull-requests, trigger: true, version: every }
+        - put: git-pull-requests
+          params:
+            path: git-pull-requests
+            status: pending
+        - task: test
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: (( grab meta.image.name ))
+                tag:        (( grab meta.image.tag ))
+            inputs:
+              - name: git-pull-requests
+                path: (( concat "gopath/src/" meta.go.module ))
+            run:
+              path: (( concat "./gopath/src/" meta.go.module "/ci/scripts/test" ))
+              args: []
+            params:
+              MODULE: (( grab meta.go.module ))
+          on_success:
+            put: git-pull-requests
+            params:
+              path: git-pull-requests
+              status: success
+          on_failure:
+            put: git-pull-requests
+            params:
+              path: git-pull-requests
+              status: failure
+        - task: pr-success-message
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: (( grab meta.image.name ))
+                tag:        (( grab meta.image.tag ))
+            inputs:
+              - { name: git-pull-requests }
+            outputs:
+              - { name: message }
+            run:
+              path: sh
+              args:
+              - -ce
+              - |
+                cd git-pull-requests
+                pr_url=$(git config --get pullrequest.url)
+                cd -
+                echo "<${pr_url}|Pull request passed test> Merge when ready: ${pr_url}" > message/body
         on_failure:
           put: notify
           params:
@@ -168,8 +236,8 @@ jobs:
             image_resource:
               type: docker-image
               source:
-                repository: (( grab meta.image ))
-                tag: (( grab meta.go.version ))
+                repository: (( grab meta.image.name ))
+                tag:        (( grab meta.image.tag ))
             platform: linux
             inputs:
               - name: version
@@ -228,6 +296,11 @@ resource_types:
     source:
       repository: cfcommunity/slack-notification-resource
 
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: jtarchie/pr
+
 resources:
   - name: git
     type: git
@@ -258,3 +331,11 @@ resources:
       user:         (( grab meta.github.owner ))
       repository:   (( grab meta.github.repo ))
       access_token: (( grab meta.github.access_token ))
+
+  - name: git-pull-requests
+    type: pull-request
+    source:
+      access_token: (( grab meta.github.access_token ))
+      private_key:  (( grab meta.github.private_key ))
+      repo:         (( concat meta.github.owner "/" meta.github.repo ))
+      base:         (( grab meta.github.branch ))
