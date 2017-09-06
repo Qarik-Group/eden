@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -33,10 +34,10 @@ type FSServiceInstance struct {
 
 // ServiceBinding represents a binding with credentials
 type fsServiceBinding struct {
-	ID          string                 `yaml:"id"`
-	Name        string                 `yaml:"name"`
-	Credentials map[string]interface{} `yaml:"credentials"`
-	CreatedAt   time.Time              `yaml:"created_at"`
+	ID          string    `yaml:"id"`
+	Name        string    `yaml:"name"`
+	Credentials string    `yaml:"credentials"`
+	CreatedAt   time.Time `yaml:"created_at"`
 }
 
 func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {
@@ -86,26 +87,22 @@ func (c FSConfig) RenameServiceInstance(idOrName, newName string) {
 }
 
 // BindServiceInstance records a new bindingID
-func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, rawCredentials interface{}) {
+func (c FSConfig) BindServiceInstance(instanceID, bindingID, name string, rawCredentials interface{}) (err error) {
 	_, inst := c.findOrCreateServiceInstance(instanceID)
 
-	credentials := map[string]interface{}{}
-	switch creds := rawCredentials.(type) {
-	case map[string]interface{}:
-		credentials = creds
-	case map[interface{}]interface{}:
-		for key, value := range creds {
-			credentials[key.(string)] = value
-		}
+	credentialsStr, err := json.Marshal(rawCredentials)
+	if err != nil {
+		return bosherr.WrapError(err, "Marshalling raw credentials")
 	}
+
 	binding := fsServiceBinding{
 		ID:          bindingID,
 		Name:        name,
-		Credentials: credentials,
+		Credentials: string(credentialsStr),
 		CreatedAt:   time.Now(),
 	}
 	inst.Bindings = append(inst.Bindings, binding)
-	c.Save()
+	return c.Save()
 }
 
 // UnbindServiceInstance removes record of a binding
@@ -202,8 +199,13 @@ func (c FSConfig) deepCopy() FSConfig {
 
 // Credentials fixes any map[interface{}]interface{} into map[string]interface{}
 // as expected by JSON marshalling
-func (b fsServiceBinding) CredentialsJSON() map[string]interface{} {
-	return deepCopy(b.Credentials)
+func (b fsServiceBinding) CredentialsJSON() (out map[string]interface{}, err error) {
+
+	err = json.Unmarshal([]byte(b.Credentials), &out)
+	if err != nil {
+		return nil, bosherr.WrapError(err, "Unmarshalling raw credentials")
+	}
+	return
 }
 
 func deepCopy(rawInput interface{}) (output map[string]interface{}) {

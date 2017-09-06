@@ -29,7 +29,11 @@ func (c CredentialsOpts) Execute(_ []string) (err error) {
     binding := inst.Bindings[0]
 
     // convert binding.Credentials into nested map[string]map[string]interface{}
-    if err := c.displayBinding(binding.CredentialsJSON(), c.Attribute); err != nil {
+    credentialsJSON, err := binding.CredentialsJSON()
+    if err != nil {
+      return err
+    }
+    if err := c.displayBinding(credentialsJSON, c.Attribute); err != nil {
       return err
     }
   } else {
