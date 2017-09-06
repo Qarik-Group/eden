@@ -13,6 +13,12 @@ apt-get update
 apt-get install eden
 ```
 
+For Mac OS using Homebrew:
+
+```
+brew install starkandwayne/cf/eden
+```
+
 From source using Golang:
 
 ```
