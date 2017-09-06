@@ -206,6 +206,14 @@ jobs:
             tag:    gh/tag
             body:   gh/notes.md
             globs: [gh/artifacts/*]
+        - name: notify
+          aggregate:
+          - put: notify
+            params:
+              channel:  (( grab meta.slack.channel ))
+              username: (( grab meta.slack.username ))
+              icon_url: (( grab meta.slack.icon ))
+              text_file: notifications/message
         on_failure:
           put: notify
           params:
