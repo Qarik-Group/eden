@@ -24,7 +24,7 @@ type EdenOpts struct {
 	// is encountered (can be set multiple times, like -vvv)
 	Verbose []bool `short:"v" long:"verbose" description:"Show verbose debug information" env:"EDEN_TRACE"`
 
-	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDENT_CONFIG" default:"~/.eden/config"`
+	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDEN_CONFIG" default:"~/.eden/config"`
 
 	Instance InstanceOpts `group:"Service Instance Options"`
 	Broker   BrokerOpts   `group:"Broker Options"`
