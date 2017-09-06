@@ -20,9 +20,11 @@ type BrokerOpts struct {
 
 // EdenOpts describes the flags/options for the CLI
 type EdenOpts struct {
+	Version bool `short:"v" long:"version" description:"Show version"`
+
 	// Slice of bool will append 'true' each time the option
 	// is encountered (can be set multiple times, like -vvv)
-	Verbose []bool `short:"v" long:"verbose" description:"Show verbose debug information" env:"EDEN_TRACE"`
+	Verbose []bool `long:"verbose" description:"Show verbose debug information" env:"EDEN_TRACE"`
 
 	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDEN_CONFIG" default:"~/.eden/config"`
 
