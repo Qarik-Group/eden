@@ -17,8 +17,10 @@ meta:
     region_name: eu-central-1
 
   slack:
-    channel: "#eden"
     webhook: (( vault "secret/pipelines/eden/slack:webhook" ))
+    channel: "#eden" # https://openservicebrokerapi.slack.com/messages/C6Y5A2N8Z/
+    username: starkandwayne-ci
+    icon:     https://www.starkandwayne.com/assets/images/shield-blue-50x50.png
 
   github:
     owner: starkandwayne
