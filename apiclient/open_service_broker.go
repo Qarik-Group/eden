@@ -228,7 +228,7 @@ func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID str
 	lastOpResp = &brokerapi.LastOperationResponse{}
 	err = json.Unmarshal(resBody, lastOpResp)
 	if err != nil {
-		return nil, errwrap.Wrapf("Failed unmarshalling binding response: {{err}}", err)
+		return nil, errwrap.Wrapf("Failed unmarshalling last operation response: {{err}}", err)
 	}
 
 	return
