@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"os"
 	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -146,6 +147,8 @@ func (c FSConfig) Save() error {
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Writing config '%s'", c.path)
 	}
+
+	os.Chmod(c.path, 0600)
 
 	return nil
 }
