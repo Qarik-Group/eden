@@ -1,0 +1,27 @@
+---
+meta:
+  name: eden
+  target: sw
+  url:     https://ci.starkandwayne.com
+
+  initial_version: 0.5.0
+
+  go:
+    version: "1.8"
+    binary: eden
+    cmd_module: .
+
+  aws:
+    access_key: (( vault "secret/aws/starkandwayne-s3:access" ))
+    secret_key: (( vault "secret/aws/starkandwayne-s3:secret" ))
+    region_name: eu-central-1
+
+  slack:
+    channel: "#eden"
+    webhook: (( vault "secret/pipelines/eden/slack:webhook" ))
+
+  github:
+    owner: starkandwayne
+    repo: eden
+    access_token: (( vault "secret/pipelines/shared/github:access_token" ))
+    private_key: (( vault  "secret/pipelines/shared/github:private_key" ))
