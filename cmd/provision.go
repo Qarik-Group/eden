@@ -19,7 +19,12 @@ type ProvisionOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c ProvisionOpts) Execute(_ []string) (err error) {
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
+	broker := apiclient.NewOpenServiceBroker(
+		Opts.Broker.URLOpt,
+		Opts.Broker.ClientOpt,
+		Opts.Broker.ClientSecretOpt,
+		Opts.Broker.APIVersion,
+	)
 
 	service, err := broker.FindServiceByNameOrID(c.ServiceNameOrID)
   if err != nil {

@@ -21,7 +21,12 @@ func (c UnbindOpts) Execute(_ []string) (err error) {
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 	// TODO: convert c.BindingID into ID if its a name
 
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
+	broker := apiclient.NewOpenServiceBroker(
+		Opts.Broker.URLOpt,
+		Opts.Broker.ClientOpt,
+		Opts.Broker.ClientSecretOpt,
+		Opts.Broker.APIVersion,
+	)
 	err = broker.Unbind(instance.ServiceID, instance.PlanID, instance.ID, c.BindingID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to unbind to service instance {{err}}", err)

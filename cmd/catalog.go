@@ -14,7 +14,12 @@ type CatalogOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c CatalogOpts) Execute(_ []string) (err error) {
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
+	broker := apiclient.NewOpenServiceBroker(
+		Opts.Broker.URLOpt,
+		Opts.Broker.ClientOpt,
+		Opts.Broker.ClientSecretOpt,
+		Opts.Broker.APIVersion,
+	)
 
 	catalogResp, err := broker.Catalog()
 	if err != nil {

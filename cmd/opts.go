@@ -16,6 +16,7 @@ type BrokerOpts struct {
 	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
 	ClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"EDEN_BROKER_CLIENT" required:"true"`
 	ClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"EDEN_BROKER_CLIENT_SECRET" required:"true"`
+	APIVersion      string `long:"api-version"   description:"API version request to pass to backend broker" env:"EDEN_BROKER_API_VERSION" default:"2.13"`
 }
 
 // EdenOpts describes the flags/options for the CLI

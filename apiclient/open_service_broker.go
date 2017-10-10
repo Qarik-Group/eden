@@ -13,18 +13,20 @@ import (
 
 // OpenServiceBroker is the client struct for connecting to remote Open Service Broker API
 type OpenServiceBroker struct {
-	url      string
-	username string
-	password string
-	catalog  *brokerapi.CatalogResponse
+	url        string
+	username   string
+	password   string
+	catalog    *brokerapi.CatalogResponse
+	apiVersion string
 }
 
 // NewOpenServiceBroker constructs OpenServiceBroker
-func NewOpenServiceBroker(url, client, clientSecret string) *OpenServiceBroker {
+func NewOpenServiceBroker(url, client, clientSecret, apiVersion string) *OpenServiceBroker {
 	return &OpenServiceBroker{
-		url:      url,
-		username: client,
-		password: clientSecret,
+		url:        url,
+		username:   client,
+		password:   clientSecret,
+		apiVersion: apiVersion,
 	}
 }
 
@@ -37,6 +39,7 @@ func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogRespon
 			return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 		}
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 		req.SetBasicAuth(broker.username, broker.password)
 
 		client := &http.Client{}
@@ -80,6 +83,7 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 		return nil, false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 	req.SetBasicAuth(broker.username, broker.password)
 
 	client := &http.Client{}
@@ -136,6 +140,7 @@ func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID s
 		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 	req.SetBasicAuth(broker.username, broker.password)
 
 	client := &http.Client{}
@@ -167,6 +172,7 @@ func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID
 		return errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 	req.SetBasicAuth(broker.username, broker.password)
 
 	client := &http.Client{}
@@ -188,6 +194,7 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 		return false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 	req.SetBasicAuth(broker.username, broker.password)
 
 	client := &http.Client{}
@@ -211,6 +218,7 @@ func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID str
 		return nil, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
 	req.SetBasicAuth(broker.username, broker.password)
 
 	client := &http.Client{}

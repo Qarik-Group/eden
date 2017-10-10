@@ -20,7 +20,12 @@ func (c BindOpts) Execute(_ []string) (err error) {
   }
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
-	broker := apiclient.NewOpenServiceBroker(Opts.Broker.URLOpt, Opts.Broker.ClientOpt, Opts.Broker.ClientSecretOpt)
+	broker := apiclient.NewOpenServiceBroker(
+		Opts.Broker.URLOpt,
+		Opts.Broker.ClientOpt,
+		Opts.Broker.ClientSecretOpt,
+		Opts.Broker.APIVersion,
+	)
 
   bindingID := uuid.New()
 	bindingName := fmt.Sprintf("%s-%s", instance.ServiceName, bindingID)
