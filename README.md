@@ -35,9 +35,9 @@ go get -u github.com/starkandwayne/eden
 Use environment variables to target an Open Service Broker API:
 
 ```
-export EDEN_BROKER_URL=https://mybroker.com
-export EDEN_BROKER_CLIENT=username
-export EDEN_BROKER_CLIENT_SECRET=password
+export SB_BROKER_URL=https://mybroker.com
+export SB_BROKER_USERNAME=username
+export SB_BROKER_PASSWORD=password
 ```
 
 To see the available services and plans:
@@ -49,7 +49,7 @@ eden catalog
 To create (`provision`) a new service instance, and to generate a set of access credentials (`bind`):
 
 ```
-export EDEN_INSTANCE=my-db-name
+export SB_INSTANCE=my-db-name
 eden provision -s servicename -p planname
 eden bind
 ```
@@ -65,7 +65,7 @@ To extract a single credentials, say a fully formed `uri`, you can use `eden cre
 For example, to provision a PostgreSQL service, generate bindings, and use them immediately with `psql`:
 
 ```
-export EDEN_INSTANCE=pg1
+export SB_INSTANCE=pg1
 eden provision -s postgresql96
 eden bind
 psql `eden creds -a uri`

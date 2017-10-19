@@ -8,15 +8,15 @@ import (
 
 // InstanceOpts describes a target service instance
 type InstanceOpts struct {
-	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"EDEN_INSTANCE"`
+	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"SB_INSTANCE"`
 }
 
 // BrokerOpts describes subset of flags/options for selecting target service broker API
 type BrokerOpts struct {
-	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"EDEN_BROKER_URL" required:"true"`
-	ClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"EDEN_BROKER_CLIENT" required:"true"`
-	ClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"EDEN_BROKER_CLIENT_SECRET" required:"true"`
-	APIVersion      string `long:"api-version"   description:"API version request to pass to backend broker" env:"EDEN_BROKER_API_VERSION" default:"2.13"`
+	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"SB_BROKER_URL" required:"true"`
+	ClientOpt       string `long:"client"        description:"Override username or UAA client"        env:"SB_BROKER_USERNAME" required:"true"`
+	ClientSecretOpt string `long:"client-secret" description:"Override password or UAA client secret" env:"SB_BROKER_PASSWORD" required:"true"`
+	APIVersion      string `long:"api-version"   description:"API version request to pass to backend broker" env:"SB_BROKER_API_VERSION" default:"2.13"`
 }
 
 // EdenOpts describes the flags/options for the CLI
