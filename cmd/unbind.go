@@ -16,7 +16,7 @@ type UnbindOpts struct {
 func (c UnbindOpts) Execute(_ []string) (err error) {
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("unbind command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
+    return fmt.Errorf("unbind command requires --instance [NAME|GUID], or $SB_INSTANCE")
   }
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 	// TODO: convert c.BindingID into ID if its a name

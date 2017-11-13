@@ -22,7 +22,7 @@ func (c RenameOpts) Execute(args []string) (err error) {
 
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("rename command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
+    return fmt.Errorf("rename command requires --instance [NAME|GUID], or $SB_INSTANCE")
   }
   inst := Opts.config().FindServiceInstance(instanceNameOrID)
   if inst.ServiceID == "" {

@@ -19,7 +19,7 @@ type CredentialsOpts struct {
 func (c CredentialsOpts) Execute(_ []string) (err error) {
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("credentials command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
+    return fmt.Errorf("credentials command requires --instance [NAME|GUID], or $SB_INSTANCE")
   }
   inst := Opts.config().FindServiceInstance(instanceNameOrID)
   if inst.ServiceID == "" {

@@ -18,7 +18,7 @@ type DeprovisionOpts struct {
 func (c DeprovisionOpts) Execute(_ []string) (err error) {
   instanceNameOrID := Opts.Instance.NameOrID
   if instanceNameOrID == "" {
-    return fmt.Errorf("deprovision command requires --instance [NAME|GUID], or $EDEN_INSTANCE")
+    return fmt.Errorf("deprovision command requires --instance [NAME|GUID], or $SB_INSTANCE")
   }
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
