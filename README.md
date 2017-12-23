@@ -2,7 +2,7 @@
 
 Interact with any Open Service Broker API to discover/provision/bind/unbind/deprovision hundreds of different services.
 
-* [Concourse CI](https://ci.starkandwayne.com/teams/main/pipelines/eden)
+* [Concourse CI](https://ci-ohio.starkandwayne.com/teams/cfcommunity/pipelines/eden)
 * Pull requests will be automatically compiled and tested (see `test-pr` job)
 * Discussions and CI notifications at [#eden channel](https://openservicebrokerapi.slack.com/messages/C6Y5A2N8Z/) on http://slack.openservicebrokerapi.org/
 
