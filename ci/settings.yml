@@ -1,29 +1,37 @@
 ---
 meta:
-  name: eden
-  target: sw
-  url:     https://ci.starkandwayne.com
+  name:    eden
+  target:  bucc
+  url:     https://192.168.50.6
 
-  initial_version: 0.5.0
+  initial_version: 1.0.0
 
   go:
-    version: "1.8"
+    version: "1.9"
     binary: eden
     cmd_module: .
 
-  aws:
-    access_key: (( vault "secret/aws/starkandwayne-s3:access" ))
-    secret_key: (( vault "secret/aws/starkandwayne-s3:secret" ))
-    region_name: eu-central-1
+  git:
+    email:  ((git-commit-email))
+    name:   ((git-commit-name))
 
-  slack:
-    webhook: (( vault "secret/pipelines/eden/slack:webhook" ))
-    channel: "#eden" # https://openservicebrokerapi.slack.com/messages/C6Y5A2N8Z/
-    username: starkandwayne-ci
-    icon:     https://www.starkandwayne.com/assets/images/shield-blue-50x50.png
+  aws:
+    bucket:      (( grab meta.pipeline ))
+    region_name: us-east-1
+    access_key:  ((aws-access-key))
+    secret_key:  ((aws-secret-key))
 
   github:
-    owner: starkandwayne
-    repo: eden
-    access_token: (( vault "secret/pipelines/shared/github:access_token" ))
-    private_key: (( vault  "secret/pipelines/shared/github:private_key" ))
+    owner:  starkandwayne
+    repo:   eden
+    branch: master
+    private_key:  ((github-private-key))
+    access_token: ((github-access-token))
+
+  slack:
+    webhook:       ((slack-webhook))
+    username:      ((slack-username))
+    icon:          ((slack-icon-url))
+    channel:       (( concat meta.name "-boshrelease" ))
+    blob_success:  '(( concat ": New version of  was detected, and updated in master. <" meta.url "/teams//pipelines/| Cut a new release?>" ))'
+    blob_failure:  '(( concat ": :airplane_arriving: <" meta.url "/teams//pipelines//jobs//builds/| Failed to update the blob for >" ))'

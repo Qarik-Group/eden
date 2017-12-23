@@ -17,8 +17,12 @@ meta:
   target:   (( param "Please identify the name of the target Concourse CI" ))
   pipeline: (( grab meta.name ))
 
+  git:
+    email:  (( param "Please provide the git email for automated commits" ))
+    name:   (( param "Please provide the git name for automated commits" ))
+
   go:
-    version: 1.7
+    version: 1.9
     module:  (( concat "github.com/" meta.github.owner "/" meta.github.repo ))
     cmd_module: (( grab meta.go.module ))
     binary:  (( grab meta.github.repo ))
@@ -29,7 +33,7 @@ meta:
     tag: (( grab meta.go.version ))
 
   aws:
-    bucket:     (( concat meta.pipeline "-pipeline" ))
+    bucket:      (( concat meta.pipeline "-pipeline" ))
     region_name: us-east-1
     access_key: (( param "Please set your AWS Access Key ID" ))
     secret_key: (( param "Please set your AWS Secret Key ID" ))
@@ -44,10 +48,10 @@ meta:
 
   slack:
     webhook:       (( param "Please specify your Slack Incoming Webhook Integration URL" ))
+    username:      concourse
+    icon:          https://cl.ly/2F421Y300u07/concourse-logo-blue-transparent.png
     notification: '(( concat ":sadpanda: " meta.pipeline " build failed!<br>URL-GOES-HERE" ))'
     channel:       (( param "Please specify the channel (#name) or user (@user) to send messages to" ))
-    username:      concourse
-    icon:          http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
     fail_moji:     ":airplane_arriving:"
     success_moji:  ":airplane_departure:"
     upset_moji:    ":sad_panda:"
@@ -258,7 +262,9 @@ jobs:
               REPO_OUT:     pushme
               BRANCH:       (( grab meta.github.branch ))
               CMD_PKG:      (( grab meta.go.cmd_module ))
-              STATIC_BINARY: (( grab meta.go.force_static_binary ))
+              STATIC_BINARY:  (( grab meta.go.force_static_binary ))
+              GIT_EMAIL:      (( grab meta.git.email ))
+              GIT_NAME:       (( grab meta.git.name ))
         - name: version
           put: version
           params: { bump: final }

@@ -40,7 +40,7 @@ usage() {
     echo "save-manifest     Save manifest to file save-manifest"
     echo "validate          Validatei pipeline instead of set pipeline"
     echo "validate-strict   Validate pipeline with strict mode"
-    echo "non-interactivet  Run set-pipeline in non-interactive mode"
+    echo "non-interactive   Run set-pipeline in non-interactive mode"
 }
 
 for arg do
