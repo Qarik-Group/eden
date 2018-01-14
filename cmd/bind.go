@@ -14,10 +14,10 @@ type BindOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c BindOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.Instance.NameOrID
-  if instanceNameOrID == "" {
-    return fmt.Errorf("bind command requires --instance [NAME|GUID], or $SB_INSTANCE")
-  }
+	instanceNameOrID := Opts.Instance.NameOrID
+	if instanceNameOrID == "" {
+		return fmt.Errorf("bind command requires --instance [NAME|GUID], or $SB_INSTANCE")
+	}
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 
 	broker := apiclient.NewOpenServiceBroker(
@@ -27,7 +27,7 @@ func (c BindOpts) Execute(_ []string) (err error) {
 		Opts.Broker.APIVersion,
 	)
 
-  bindingID := uuid.New()
+	bindingID := uuid.New()
 	bindingName := fmt.Sprintf("%s-%s", instance.ServiceName, bindingID)
 
 	// TODO - store allocated bindingIDs into local DB
@@ -42,6 +42,6 @@ func (c BindOpts) Execute(_ []string) (err error) {
 
 	fmt.Println("Success")
 	fmt.Println("")
-	fmt.Printf("Run 'eden credentials -i %s -b %s' to see credentials", instance.Name, bindingName)
+	fmt.Printf("Run 'eden credentials -i %s -b %s' to see credentials\n", instance.Name, bindingName)
 	return
 }
