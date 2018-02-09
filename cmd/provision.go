@@ -61,7 +61,7 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
 			time.Sleep(5 * time.Second)
-			lastOpResp, err = broker.LastOperation(service.ID, plan.ID, instanceID)
+			lastOpResp, err = broker.LastOperation(service.ID, plan.ID, instanceID, provisioningResp.OperationData)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)

@@ -185,13 +185,15 @@ func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID
 }
 
 // Deprovision destroys the service instance
-func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID string) (isAsync bool, err error) {
+func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID string) (deprovisioningResp *brokerapi.DeprovisionResponse, isAsync bool, err error) {
 	url := fmt.Sprintf("%s/v2/service_instances/%s?service_id=%s&plan_id=%s&accepts_incomplete=true",
 		broker.url, instanceID, serviceID, planID)
 
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
-		return false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		isAsync = false
+		err = errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
@@ -199,8 +201,15 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	deprovisioningResp = &brokerapi.DeprovisionResponse{}
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	json.Unmarshal(resBody, deprovisioningResp)
+
 	if err != nil {
-		return false, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+		isAsync = false
+		err = errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+		return
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusAccepted {
@@ -210,8 +219,8 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 }
 
 // LastOperation fetches the status of the last operation perform upon a service instance
-func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID string) (lastOpResp *brokerapi.LastOperationResponse, err error) {
-	url := fmt.Sprintf("%s/v2/service_instances/%s/last_operation", broker.url, instanceID)
+func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID, operation string) (lastOpResp *brokerapi.LastOperationResponse, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s/last_operation?operation=%s&service_id=%s&plan_id=%s", broker.url, instanceID, operation, serviceID, planID)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

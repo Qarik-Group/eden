@@ -28,7 +28,7 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
 		Opts.Broker.ClientSecretOpt,
 		Opts.Broker.APIVersion,
 	)
-	isAsync, err := broker.Deprovision(instance.ServiceID, instance.PlanID, instance.ID)
+	resp, isAsync, err := broker.Deprovision(instance.ServiceID, instance.PlanID, instance.ID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to deprovision service instance {{err}}", err)
 	}
@@ -40,7 +40,7 @@ func (c DeprovisionOpts) Execute(_ []string) (err error) {
 		lastOpResp := &brokerapi.LastOperationResponse{State: brokerapi.InProgress}
 		for lastOpResp.State == brokerapi.InProgress {
 			time.Sleep(5 * time.Second)
-			lastOpResp, err = broker.LastOperation(instance.ServiceID, instance.PlanID, instance.ID)
+			lastOpResp, err = broker.LastOperation(instance.ServiceID, instance.PlanID, instance.ID, resp.OperationData)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err.Error())
 				os.Exit(1)
