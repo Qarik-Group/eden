@@ -104,7 +104,7 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 	}
 	if resp.StatusCode == http.StatusAccepted {
 		isAsync = true
-	} else if resp.StatusCode == http.StatusCreated {
+	} else if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		isAsync = false
 	} else {
 		errorResp := &brokerapi.ErrorResponse{}
