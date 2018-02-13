@@ -108,7 +108,7 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 		isAsync = false
 	} else {
 		errorResp := &brokerapi.ErrorResponse{}
-		err = json.Unmarshal(resBody, provisioningResp)
+		err = json.Unmarshal(resBody, errorResp)
 		if err != nil {
 			return nil, false, errwrap.Wrapf("Failed unmarshalling error response: {{err}}", err)
 		}
