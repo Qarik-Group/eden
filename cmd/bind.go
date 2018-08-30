@@ -19,6 +19,10 @@ func (c BindOpts) Execute(_ []string) (err error) {
 		return fmt.Errorf("bind command requires --instance [NAME|GUID], or $SB_INSTANCE")
 	}
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
+	bindingID := Opts.Binding.ID
+	if bindingID == "" {
+		bindingID = uuid.New()
+	}
 
 	broker := apiclient.NewOpenServiceBroker(
 		Opts.Broker.URLOpt,
@@ -27,7 +31,6 @@ func (c BindOpts) Execute(_ []string) (err error) {
 		Opts.Broker.APIVersion,
 	)
 
-	bindingID := uuid.New()
 	bindingName := fmt.Sprintf("%s-%s", instance.ServiceName, bindingID)
 
 	// TODO - store allocated bindingIDs into local DB

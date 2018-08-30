@@ -11,6 +11,11 @@ type InstanceOpts struct {
 	NameOrID string `short:"i" long:"instance" description:"Service instance name/ID" env:"SB_INSTANCE"`
 }
 
+// BindingOpts ...
+type BindingOpts struct {
+	ID string `short:"b" long:"binding" description:"Service binding ID" env:"SB_BINDING"`
+}
+
 // BrokerOpts describes subset of flags/options for selecting target service broker API
 type BrokerOpts struct {
 	URLOpt          string `long:"url"           description:"Open Service Broker URL"                env:"SB_BROKER_URL" required:"true"`
@@ -30,6 +35,7 @@ type EdenOpts struct {
 	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDEN_CONFIG" default:"~/.eden/config"`
 
 	Instance InstanceOpts `group:"Service Instance Options"`
+	Binding  BindingOpts  `group:"Service Binding Options"`
 	Broker   BrokerOpts   `group:"Broker Options"`
 
 	// Broker API commands
