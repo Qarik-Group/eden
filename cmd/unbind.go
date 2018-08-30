@@ -14,10 +14,10 @@ type UnbindOpts struct {
 
 // Execute is callback from go-flags.Commander interface
 func (c UnbindOpts) Execute(_ []string) (err error) {
-  instanceNameOrID := Opts.Instance.NameOrID
-  if instanceNameOrID == "" {
-    return fmt.Errorf("unbind command requires --instance [NAME|GUID], or $SB_INSTANCE")
-  }
+	instanceNameOrID := Opts.Instance.NameOrID
+	if instanceNameOrID == "" {
+		return fmt.Errorf("unbind command requires --instance [NAME|GUID], or $SB_INSTANCE")
+	}
 	instance := Opts.config().FindServiceInstance(instanceNameOrID)
 	// TODO: convert c.BindingID into ID if its a name
 
@@ -33,6 +33,6 @@ func (c UnbindOpts) Execute(_ []string) (err error) {
 	}
 	Opts.config().UnbindServiceInstance(instance.ID, c.BindingID)
 
-  fmt.Println("Success")
+	fmt.Println("Success")
 	return
 }

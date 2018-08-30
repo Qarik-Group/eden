@@ -27,7 +27,7 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 	)
 
 	service, err := broker.FindServiceByNameOrID(c.ServiceNameOrID)
-  if err != nil {
+	if err != nil {
 		return errwrap.Wrapf("Could not find service in catalog: {{err}}", err)
 	}
 	plan, err := broker.FindPlanByNameOrID(service, c.PlanNameOrID)
@@ -37,9 +37,9 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 
 	instanceName := Opts.Instance.NameOrID
 	instanceID := uuid.New()
-  if instanceName == "" {
-    instanceName = fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
-  }
+	if instanceName == "" {
+		instanceName = fmt.Sprintf("%s-%s-%s", service.Name, plan.Name, instanceID)
+	}
 	prexisting := Opts.config().FindServiceInstance(instanceName)
 	if prexisting.ServiceName != "" {
 		return fmt.Errorf("Service instance '%s' already exists", instanceName)
@@ -50,9 +50,9 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return errwrap.Wrapf("Failed to provision service instance: {{err}}", err)
 	}
 	Opts.config().ProvisionNewServiceInstance(instanceID, instanceName,
-    service.ID, service.Name,
-    plan.ID, plan.Name,
-    Opts.Broker.URLOpt)
+		service.ID, service.Name,
+		plan.ID, plan.Name,
+		Opts.Broker.URLOpt)
 
 	fmt.Printf("provision:   %s/%s - name: %s\n", service.Name, plan.Name, instanceName)
 	if isAsync {
