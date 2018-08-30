@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
-	boshtbl "github.com/cloudfoundry/bosh-cli/ui/table"
+	"github.com/jhunt/go-table"
 	"github.com/starkandwayne/eden/apiclient"
 )
 
@@ -27,19 +28,17 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 		os.Exit(1)
 	}
 
-	table := boshtbl.Table{
-		Content: "services",
-
-		Header: []boshtbl.Header{
-			boshtbl.NewHeader("Service Name"),
-			boshtbl.NewHeader("Plan Name"),
-			boshtbl.NewHeader("Description"),
-		},
-
-		SortBy: []boshtbl.ColumnSort{
-			{Column: 1, Asc: true},
-		},
+	if Opts.JSON {
+		b, err := json.Marshal(catalogResp)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		fmt.Printf("%s\n", string(b))
+		os.Exit(0)
 	}
+
+	table := table.NewTable("Service", "Plan", "Description")
 
 	var serviceID string
 	var planID string
@@ -51,14 +50,11 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 			if planID == "" {
 				planID = plan.ID
 			}
-			table.Rows = append(table.Rows, []boshtbl.Value{
-				boshtbl.NewValueString(service.Name),
-				boshtbl.NewValueString(plan.Name),
-				boshtbl.NewValueString(plan.Description),
-			})
+			/* FIXME service descriptions are ignored */
+			table.Row(nil, service.Name, plan.Name, plan.Description)
 		}
 	}
 
-	table.Print(os.Stdout)
+	table.Output(os.Stdout)
 	return
 }

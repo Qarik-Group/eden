@@ -31,6 +31,7 @@ type EdenOpts struct {
 	// Slice of bool will append 'true' each time the option
 	// is encountered (can be set multiple times, like -vvv)
 	Verbose []bool `long:"verbose" description:"Show verbose debug information" env:"EDEN_TRACE"`
+	JSON    bool   `long:"json" description:"Print information in JSON format, for easier parsing" env:"EDEN_AS_JSON"`
 
 	ConfigPathOpt string `long:"config" description:"Config file path" env:"EDEN_CONFIG" default:"~/.eden/config"`
 

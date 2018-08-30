@@ -18,27 +18,27 @@ type FSConfig struct {
 }
 
 type FSServiceInstances struct {
-	ServiceInstances []*FSServiceInstance `yaml:"service_instances"`
+	ServiceInstances []*FSServiceInstance `yaml:"service_instances" json:"service_instances"`
 }
 
 type FSServiceInstance struct {
-	ID          string             `yaml:"id"`
-	Name        string             `yaml:"name"`
-	ServiceID   string             `yaml:"service_id"`
-	ServiceName string             `yaml:"service_name"`
-	PlanID      string             `yaml:"plan_id"`
-	PlanName    string             `yaml:"plan_name"`
-	BrokerURL   string             `yaml:"broker_url"`
-	Bindings    []fsServiceBinding `yaml:"bindings"`
-	CreatedAt   time.Time          `yaml:"created_at"`
+	ID          string             `yaml:"id"           json:"id"`
+	Name        string             `yaml:"name"         json:"name"`
+	ServiceID   string             `yaml:"service_id"   json:"service_id"`
+	ServiceName string             `yaml:"service_name" json:"service_name"`
+	PlanID      string             `yaml:"plan_id"      json:"plan_id"`
+	PlanName    string             `yaml:"plan_name"    json:"plan_name"`
+	BrokerURL   string             `yaml:"broker_url"   json:"broker_url"`
+	Bindings    []fsServiceBinding `yaml:"bindings"     json:"bindings"`
+	CreatedAt   time.Time          `yaml:"created_at"   json:"created_at"`
 }
 
 // ServiceBinding represents a binding with credentials
 type fsServiceBinding struct {
-	ID          string    `yaml:"id"`
-	Name        string    `yaml:"name"`
-	Credentials string    `yaml:"credentials"`
-	CreatedAt   time.Time `yaml:"created_at"`
+	ID          string    `yaml:"id"             json:"id"`
+	Name        string    `yaml:"name"           json:"name"`
+	Credentials string    `yaml:"credentials"    json:"credentials"`
+	CreatedAt   time.Time `yaml:"created_at"     json:"created_at"`
 }
 
 func NewFSConfigFromPath(path string, fs boshsys.FileSystem) (FSConfig, error) {

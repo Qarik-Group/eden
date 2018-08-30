@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
-	boshtbl "github.com/cloudfoundry/bosh-cli/ui/table"
+	"github.com/jhunt/go-table"
 )
 
 // ServicesOpts represents the 'services' command
@@ -21,21 +22,17 @@ func (c ServicesOpts) Execute(_ []string) (err error) {
 }
 
 func (c ServicesOpts) showAllServices() (err error) {
-	table := boshtbl.Table{
-		Content: "services",
-
-		Header: []boshtbl.Header{
-			boshtbl.NewHeader("Name"),
-			boshtbl.NewHeader("Service Name"),
-			boshtbl.NewHeader("Plan Name"),
-			boshtbl.NewHeader("Binding Name"),
-			boshtbl.NewHeader("Broker URL"),
-		},
-
-		SortBy: []boshtbl.ColumnSort{
-			{Column: 1, Asc: true},
-		},
+	if Opts.JSON {
+		b, err := json.Marshal(Opts.config().ServiceInstances())
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		fmt.Printf("%s\n", string(b))
+		os.Exit(0)
 	}
+
+	table := table.NewTable("Name", "Service", "Plan", "Binding", "Broker URL")
 
 	instances := Opts.config().ServiceInstances()
 	for _, inst := range instances {
@@ -43,16 +40,9 @@ func (c ServicesOpts) showAllServices() (err error) {
 		if len(inst.Bindings) > 0 {
 			bindingName = inst.Bindings[0].Name
 		}
-		table.Rows = append(table.Rows, []boshtbl.Value{
-			boshtbl.NewValueString(inst.Name),
-			boshtbl.NewValueString(inst.ServiceName),
-			boshtbl.NewValueString(inst.PlanName),
-			boshtbl.NewValueString(bindingName),
-			boshtbl.NewValueString(inst.BrokerURL),
-		})
-
+		table.Row(nil, inst.Name, inst.ServiceName, inst.PlanName, bindingName, inst.BrokerURL)
 	}
-	table.Print(os.Stdout)
+	table.Output(os.Stdout)
 	return
 }
 

@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/hashicorp/errwrap"
@@ -48,7 +47,7 @@ func (c CredentialsOpts) displayBinding(credentials map[string]interface{}, attr
 		if err != nil {
 			return errwrap.Wrapf("Could not marshal credentials: {{err}}", err)
 		}
-		os.Stdout.Write(b)
+		fmt.Printf("%s\n", string(b))
 		return nil
 	}
 	if val, ok := credentials[attribute]; ok {
