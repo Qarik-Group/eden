@@ -21,18 +21,6 @@
 			"revisionTime": "2017-04-05T21:03:25Z"
 		},
 		{
-			"checksumSHA1": "NKo5aCRox/oBoLJLTjEeDajtTSA=",
-			"path": "github.com/cloudfoundry/bosh-cli/ui/fmt",
-			"revision": "f73c244bf9d137d3e06e409e4417958be3a42c66",
-			"revisionTime": "2017-03-24T00:46:07Z"
-		},
-		{
-			"checksumSHA1": "HiPRof2Hiyn9o3Xm42kVPN6Y77U=",
-			"path": "github.com/cloudfoundry/bosh-cli/ui/table",
-			"revision": "f73c244bf9d137d3e06e409e4417958be3a42c66",
-			"revisionTime": "2017-03-24T00:46:07Z"
-		},
-		{
 			"checksumSHA1": "FnR1zvUvK6aui2XELTqvuhY/T4g=",
 			"path": "github.com/cloudfoundry/bosh-utils/errors",
 			"revision": "0d36faac740305072f50b237368b8ae4c8fa097c",
@@ -49,18 +37,6 @@
 			"path": "github.com/cloudfoundry/bosh-utils/system",
 			"revision": "0d36faac740305072f50b237368b8ae4c8fa097c",
 			"revisionTime": "2017-03-28T16:24:25Z"
-		},
-		{
-			"checksumSHA1": "vuokX9u1epWhCXgpBkOnIOiOxMI=",
-			"path": "github.com/cppforlife/go-semi-semantic/version",
-			"revision": "576b6af77ae4f3ccef356902fb3b9a9ae22e0b11",
-			"revisionTime": "2016-09-21T01:03:11Z"
-		},
-		{
-			"checksumSHA1": "xteP9Px90oMrg/HZuqvZkpXCR+s=",
-			"path": "github.com/dustin/go-humanize",
-			"revision": "8929fe90cee4b2cb9deb468b51fb34eba64d1bf0",
-			"revisionTime": "2015-11-25T21:46:33Z"
 		},
 		{
 			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
@@ -85,6 +61,12 @@
 			"path": "github.com/jessevdk/go-flags",
 			"revision": "460c7bb0abd6e927f2767cadc91aa6ef776a98b4",
 			"revisionTime": "2017-02-12T22:02:46Z"
+		},
+		{
+			"checksumSHA1": "1IUUKLpTgdCCX7gauE+ZZHz3VbY=",
+			"path": "github.com/jhunt/go-table",
+			"revision": "4d35b919af4f5c23198f928eef04f1d1f5015bce",
+			"revisionTime": "2017-10-17T04:31:25Z"
 		},
 		{
 			"checksumSHA1": "Se195FlZ160eaEk/uVx4KdTPSxU=",
