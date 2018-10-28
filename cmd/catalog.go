@@ -31,7 +31,7 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 
 	if Opts.Catalog.Strict {
 		errors := make([]error, 0)
-		seen := make(map[string] bool)
+		seen := make(map[string]bool)
 		for _, service := range catalogResp.Services {
 			for _, plan := range service.Plans {
 				if _, exists := seen[plan.ID]; exists {
@@ -64,6 +64,7 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 
 	var serviceID string
 	var planID string
+	previousService := ""
 	for _, service := range catalogResp.Services {
 		if serviceID == "" {
 			serviceID = service.ID
@@ -73,7 +74,12 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 				planID = plan.ID
 			}
 			/* FIXME service descriptions are ignored */
-			table.Row(nil, service.Name, plan.Name, plan.Description)
+			if previousService == service.Name {
+				table.Row(nil, "~", plan.Name, plan.Description)
+			} else {
+				table.Row(nil, service.Name, plan.Name, plan.Description)
+			}
+			previousService = service.Name
 		}
 	}
 
