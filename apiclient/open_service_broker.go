@@ -112,9 +112,13 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 		if err != nil {
 			return nil, false, errwrap.Wrapf("Failed unmarshalling error response: {{err}}", err)
 		}
-		errMsg := fmt.Sprintf("%s: %s", errorResp.Error, errorResp.Description)
-		if errorResp.Error == "" {
-			errMsg = fmt.Sprintf("Unknown internal broker error (%s)", broker.url)
+
+		errMsg := errorResp.Description
+		if errorResp.Error != "" && errorResp.Description != "" {
+			errMsg = fmt.Sprintf("%s: %s", errorResp.Error, errorResp.Description)
+		}
+		if errorResp.Error == "" && errorResp.Description == "" {
+			errMsg = fmt.Sprintf("Unknown internal broker error (%s) - %#v", broker.url)
 		}
 		return nil, false, fmt.Errorf(errMsg)
 	}
