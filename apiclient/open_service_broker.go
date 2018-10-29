@@ -64,13 +64,13 @@ func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogRespon
 }
 
 // Provision attempts to provision a new service instance
-func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string) (provisioningResp *brokerapi.ProvisioningResponse, isAsync bool, err error) {
+func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID, organizationGUID, spaceGUID string) (provisioningResp *brokerapi.ProvisioningResponse, isAsync bool, err error) {
 	url := fmt.Sprintf("%s/v2/service_instances/%s?accepts_incomplete=true", broker.url, instanceID)
 	details := brokerapi.ProvisionDetails{
 		ServiceID:        serviceID,
 		PlanID:           planID,
-		OrganizationGUID: "eden-unknown-guid",
-		SpaceGUID:        "eden-unknown-space",
+		OrganizationGUID: organizationGUID,
+		SpaceGUID:        spaceGUID,
 		RawParameters:    nil,
 	}
 

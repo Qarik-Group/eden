@@ -15,6 +15,9 @@ import (
 type ProvisionOpts struct {
 	ServiceNameOrID string `short:"s" long:"service-name" description:"Service name/ID from catalog" required:"true"`
 	PlanNameOrID    string `short:"p" long:"plan-name" description:"Plan name/ID from catalog (default: first)"`
+
+	SpaceGUID        string `long:"space-guid" description:"Explicitly provide a 'space_guid' provision field"`
+	OrganizationGUID string `long:"organization-guid" description:"Explicitly provide a 'organization_guid' provision field"`
 }
 
 // Execute is callback from go-flags.Commander interface
@@ -25,6 +28,13 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		Opts.Broker.ClientSecretOpt,
 		Opts.Broker.APIVersion,
 	)
+
+	if c.OrganizationGUID == "" {
+		c.OrganizationGUID = "eden-unknown-org"
+	}
+	if c.SpaceGUID == "" {
+		c.SpaceGUID = "eden-unknown-space"
+	}
 
 	service, err := broker.FindServiceByNameOrID(c.ServiceNameOrID)
 	if err != nil {
@@ -45,7 +55,9 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return fmt.Errorf("Service instance '%s' already exists", instanceName)
 	}
 
-	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
+	provisioningResp, isAsync, err := broker.Provision(
+		service.ID, plan.ID, instanceID,
+		c.OrganizationGUID, c.SpaceGUID)
 	if err != nil {
 		return errwrap.Wrapf("Failed to provision service instance: {{err}}", err)
 	}
