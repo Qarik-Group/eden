@@ -106,21 +106,11 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 		isAsync = true
 	} else if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		isAsync = false
-	} else {
+	}
+	if resp.StatusCode >= 400 {
 		errorResp := &brokerapi.ErrorResponse{}
-		err = json.Unmarshal(resBody, errorResp)
-		if err != nil {
-			return nil, false, errwrap.Wrapf("Failed unmarshalling error response: {{err}}", err)
-		}
-
-		errMsg := errorResp.Description
-		if errorResp.Error != "" && errorResp.Description != "" {
-			errMsg = fmt.Sprintf("%s: %s", errorResp.Error, errorResp.Description)
-		}
-		if errorResp.Error == "" && errorResp.Description == "" {
-			errMsg = fmt.Sprintf("Unknown internal broker error (%s) - %#v", broker.url)
-		}
-		return nil, false, fmt.Errorf(errMsg)
+		json.Unmarshal(resBody, errorResp)
+		return nil, false, fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
 	}
 	return
 }
@@ -158,6 +148,12 @@ func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID s
 	if err != nil {
 		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
 	}
+	if resp.StatusCode >= 400 {
+		errorResp := &brokerapi.ErrorResponse{}
+		json.Unmarshal(resBody, errorResp)
+		return nil, fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
+	}
+
 	binding = &brokerapi.Binding{}
 	err = json.Unmarshal(resBody, binding)
 	if err != nil {
