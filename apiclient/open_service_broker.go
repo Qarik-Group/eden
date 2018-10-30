@@ -181,6 +181,16 @@ func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID
 		return errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
 	}
 	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+	if resp.StatusCode >= 400 {
+		errorResp := &brokerapi.ErrorResponse{}
+		json.Unmarshal(resBody, errorResp)
+		return fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
+	}
 	return
 }
 
@@ -204,7 +214,9 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 	deprovisioningResp = &brokerapi.DeprovisionResponse{}
 
 	resBody, err := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(resBody, deprovisioningResp)
+	if err != nil {
+		return nil, false, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
 
 	if err != nil {
 		isAsync = false
@@ -215,6 +227,13 @@ func (broker *OpenServiceBroker) Deprovision(serviceID, planID, instanceID strin
 	if resp.StatusCode == http.StatusAccepted {
 		isAsync = true
 	}
+	if resp.StatusCode >= 400 {
+		errorResp := &brokerapi.ErrorResponse{}
+		json.Unmarshal(resBody, errorResp)
+		return nil, false, fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
+	}
+
+	json.Unmarshal(resBody, deprovisioningResp)
 	return
 }
 
@@ -240,6 +259,11 @@ func (broker *OpenServiceBroker) LastOperation(serviceID, planID, instanceID, op
 	resBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+	if resp.StatusCode >= 400 {
+		errorResp := &brokerapi.ErrorResponse{}
+		json.Unmarshal(resBody, errorResp)
+		return nil, fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
 	}
 
 	lastOpResp = &brokerapi.LastOperationResponse{}

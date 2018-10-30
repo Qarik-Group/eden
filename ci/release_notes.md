@@ -1,1 +1,1 @@
-* `eden provision` error response might be a description only
+* Capture errors from all API actions
