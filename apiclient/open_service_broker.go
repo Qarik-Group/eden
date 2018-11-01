@@ -65,13 +65,14 @@ func (broker *OpenServiceBroker) Catalog() (catalogResp *brokerapi.CatalogRespon
 
 // Provision attempts to provision a new service instance
 func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string) (provisioningResp *brokerapi.ProvisioningResponse, isAsync bool, err error) {
+	someParameters, _ := json.Marshal(map[string]string{"instance1": "123", "instance2": "abc"})
 	url := fmt.Sprintf("%s/v2/service_instances/%s?accepts_incomplete=true", broker.url, instanceID)
 	details := brokerapi.ProvisionDetails{
 		ServiceID:        serviceID,
 		PlanID:           planID,
 		OrganizationGUID: "eden-unknown-guid",
 		SpaceGUID:        "eden-unknown-space",
-		RawParameters:    nil,
+		RawParameters:    someParameters,
 	}
 
 	buffer := &bytes.Buffer{}
@@ -117,12 +118,13 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string)
 
 // Bind requests new set of credentials to access service instance
 func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID string) (binding *brokerapi.Binding, err error) {
+	someParameters, _ := json.Marshal(map[string]string{"bind1": "123", "bind2": "abc"})
 	url := fmt.Sprintf("%s/v2/service_instances/%s/service_bindings/%s", broker.url, instanceID, bindingID)
 	details := brokerapi.BindDetails{
 		ServiceID:     serviceID,
 		PlanID:        planID,
 		AppGUID:       "eden-unknown",
-		RawParameters: nil,
+		RawParameters: someParameters,
 	}
 
 	buffer := &bytes.Buffer{}
