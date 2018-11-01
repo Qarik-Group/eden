@@ -60,7 +60,7 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 		os.Exit(0)
 	}
 
-	table := table.NewTable("Service", "Plan", "Description")
+	table := table.NewTable("Service", "Plan", "Free", "Description")
 
 	var serviceID string
 	var planID string
@@ -74,10 +74,14 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 				planID = plan.ID
 			}
 			/* FIXME service descriptions are ignored */
+			freeOrPaid := "paid"
+			if *plan.Free {
+				freeOrPaid = "free"
+			}
 			if previousService == service.Name {
-				table.Row(nil, "~", plan.Name, plan.Description)
+				table.Row(nil, "~", plan.Name, freeOrPaid, plan.Description)
 			} else {
-				table.Row(nil, service.Name, plan.Name, plan.Description)
+				table.Row(nil, service.Name, plan.Name, freeOrPaid, plan.Description)
 			}
 			previousService = service.Name
 		}
