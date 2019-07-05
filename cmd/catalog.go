@@ -74,9 +74,12 @@ func (c CatalogOpts) Execute(_ []string) (err error) {
 				planID = plan.ID
 			}
 			/* FIXME service descriptions are ignored */
-			freeOrPaid := "paid"
-			if *plan.Free {
-				freeOrPaid = "free"
+			freeOrPaid := "unspecified"
+			if plan.Free != nil {
+				freeOrPaid = "paid"
+				if *plan.Free {
+					freeOrPaid = "free"
+				}
 			}
 			if previousService == service.Name {
 				table.Row(nil, "~", plan.Name, freeOrPaid, plan.Description)
