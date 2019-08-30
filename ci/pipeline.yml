@@ -22,7 +22,7 @@ meta:
     name:   (( param "Please provide the git name for automated commits" ))
 
   go:
-    version: "1.12"
+    version: 1.12
     module:  (( concat "github.com/" meta.github.owner "/" meta.github.repo ))
     cmd_module: (( grab meta.go.module ))
     binary:  (( grab meta.github.repo ))
@@ -64,6 +64,7 @@ groups:
     jobs:
       - test
       - test-pr
+      - pre
       - rc
       - shipit
       - major
@@ -166,13 +167,62 @@ jobs:
             icon_url: (( grab meta.slack.icon ))
             text:    '(( concat meta.slack.fail_url " " meta.pipeline ": test job failed" ))'
 
+  - name: pre
+    public: true
+    serial: true
+    plan:
+    - do:
+      - get: git
+        passed:
+        - test
+        trigger: true
+      - get: version
+        trigger: true
+      - task: release-notes
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: starkandwayne/concourse
+              tag: latest
+          run:
+            path: sh
+            args:
+            - -ce
+            - |
+              cd git
+              if [ -f ci/release_notes.md ]; then
+                echo "######   RELEASE NOTES   ###############"
+                echo
+                cat ci/release_notes.md
+                echo
+                echo "########################################"
+                echo
+              else
+                echo "NO RELEASE NOTES HAVE BEEN WRITTEN"
+                echo "You *might* want to do that before"
+                echo "hitting (+) on that shipit job..."
+                echo
+              fi
+          inputs:
+          - name: git
+      on_failure:
+        put: notify
+        params:
+          channel:  (( grab meta.slack.channel ))
+          username: (( grab meta.slack.username ))
+          icon_url: (( grab meta.slack.icon ))
+          message: release candidate job 'pre' failed (which is unusual).
+          ok: false
+
   - name: rc
     public: true
     plan:
       - do:
         - aggregate:
-            - { get: git,     trigger: true,  passed: [test] }
-            - { get: version, trigger: true, params: {pre: rc} }
+            - { get: git,     trigger: true,  passed: [pre] }
+            - { get: version, trigger: false, params: {pre: rc} }
         - put: version
           params: {file: version/number}
         on_failure:
