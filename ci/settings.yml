@@ -2,7 +2,7 @@
 meta:
   name:    eden
   target:  ohio-cf
-  url:     https://ci-ohio.starkandwayne.com
+  url:     https://ci2.starkandwayne.com
 
   initial_version: 0.5.0
 
