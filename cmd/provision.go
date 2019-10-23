@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/errwrap"
@@ -15,6 +18,7 @@ import (
 type ProvisionOpts struct {
 	ServiceNameOrID string `short:"s" long:"service-name" description:"Service name/ID from catalog" required:"true"`
 	PlanNameOrID    string `short:"p" long:"plan-name" description:"Plan name/ID from catalog (default: first)"`
+	Parameters      string `short:"P" long:"parameters" description:"parameters in json format"`
 }
 
 // Execute is callback from go-flags.Commander interface
@@ -45,7 +49,22 @@ func (c ProvisionOpts) Execute(_ []string) (err error) {
 		return fmt.Errorf("Service instance '%s' already exists", instanceName)
 	}
 
-	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID)
+	var parameters json.RawMessage
+	if len(c.Parameters) > 0 {
+		var input []byte
+		if strings.HasPrefix(c.Parameters, "@") {
+			input, err = ioutil.ReadFile(c.Parameters[1:])
+			if err != nil {
+				return errwrap.Wrapf("Could not read file: {{err}}", err)
+			}
+		} else {
+			input = []byte(c.Parameters)
+		}
+		if err := json.Unmarshal(input, &parameters); err != nil {
+			return errwrap.Wrapf("Could not unmarshal parameters: {{err}}", err)
+		}
+	}
+	provisioningResp, isAsync, err := broker.Provision(service.ID, plan.ID, instanceID, parameters)
 	if err != nil {
 		return errwrap.Wrapf("Failed to provision service instance: {{err}}", err)
 	}
