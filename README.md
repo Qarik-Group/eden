@@ -23,6 +23,19 @@ For Mac OS using Homebrew:
 brew install starkandwayne/cf/eden
 ```
 
+For FreeBSD using pkg:
+
+```shell
+pkg install eden
+```
+
+For FreeBSD using ports:
+
+```shell
+cd /usr/ports/www/eden
+make install
+```
+
 From source using Golang:
 
 ```shell
