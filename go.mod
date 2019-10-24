@@ -1,6 +1,6 @@
 module github.com/starkandwayne/eden
 
-go 1.12
+go 1.13
 
 require (
 	code.cloudfoundry.org/lager v0.0.0-20170223024724-de8e9c6c6e47 // indirect
