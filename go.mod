@@ -12,6 +12,7 @@ require (
 	github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
 	github.com/jessevdk/go-flags v0.0.0-20170212220246-460c7bb0abd6
 	github.com/jhunt/go-table v0.0.0-20171017044620-4d35b919af4f
+	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/pborman/uuid v0.0.0-20170112150404-1b00554d8222
 	github.com/pivotal-cf/brokerapi v0.0.0-20170307172350-8f25c50c2794
 	gopkg.in/yaml.v2 v2.0.0-20170407172122-cd8b52f8269e

@@ -16,10 +16,16 @@ github.com/gorilla/mux v0.0.0-20170228224354-599cba5e7b61 h1:4lceeSGcX6bSAeeTiqc
 github.com/gorilla/mux v0.0.0-20170228224354-599cba5e7b61/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
 github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce h1:prjrVgOk2Yg6w+PflHoszQNLTUh4kaByUcEWM/9uin4=
 github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
+github.com/hashicorp/go-version v1.0.0 h1:21MVWPKDphxa7ineQQTrCU5brh7OuVVAzGOCnnCPtE8=
+github.com/hashicorp/go-version v1.0.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09ZGVZPK5anwXA=
 github.com/jessevdk/go-flags v0.0.0-20170212220246-460c7bb0abd6 h1:3sqgDDcqnooPDgktvzvan9LN4PGl3N0NqSk1ostdtqw=
 github.com/jessevdk/go-flags v0.0.0-20170212220246-460c7bb0abd6/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
 github.com/jhunt/go-table v0.0.0-20171017044620-4d35b919af4f h1:AMGBwFtuRYfMqMiwIf/AuelJStYZxio6m982cLTwyBg=
 github.com/jhunt/go-table v0.0.0-20171017044620-4d35b919af4f/go.mod h1:ws87Lzc/NsPhH1MRRNk2IBANVMHsaQws0NqstHrveaE=
+github.com/mitchellh/gox v1.0.1 h1:x0jD3dcHk9a9xPSDN6YEL4xL6Qz0dvNYm8yZqui5chI=
+github.com/mitchellh/gox v1.0.1/go.mod h1:ED6BioOGXMswlXa2zxfh/xdd5QhwYliBFn9V18Ap4z4=
+github.com/mitchellh/iochan v1.0.0 h1:C+X3KsSTLFVBr/tK1eYN/vs4rJcvsiLU338UhYPJWeY=
+github.com/mitchellh/iochan v1.0.0/go.mod h1:JwYml1nuB7xOzsp52dPpHFffvOCDupsG0QubkSMEySY=
 github.com/pborman/uuid v0.0.0-20170112150404-1b00554d8222 h1:goeTyGkArOZIVOMA0dQbyuPWGNQJZGPwPu/QS9GlpnA=
 github.com/pborman/uuid v0.0.0-20170112150404-1b00554d8222/go.mod h1:VyrYX9gd7irzKovcSS6BIIEwPRkP2Wm2m9ufcdFSJ34=
 github.com/pivotal-cf/brokerapi v0.0.0-20170307172350-8f25c50c2794 h1:1fVGAIMh4IF7MaTlkQ2EqvvJcf7U+pQaVoHb5aBR14s=
