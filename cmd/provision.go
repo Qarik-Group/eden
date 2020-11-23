@@ -18,7 +18,7 @@ import (
 type ProvisionOpts struct {
 	ServiceNameOrID string `short:"s" long:"service-name" description:"Service name/ID from catalog" required:"true"`
 	PlanNameOrID    string `short:"p" long:"plan-name" description:"Plan name/ID from catalog (default: first)"`
-	Parameters      string `short:"P" long:"parameters" description:"parameters in json format"`
+	Parameters      string `short:"P" long:"parameters" description:"parameters in json format. To use a file as input, prepend the filename with '@' (-P=@data.json)"`
 }
 
 // Execute is callback from go-flags.Commander interface
