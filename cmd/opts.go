@@ -44,6 +44,7 @@ type EdenOpts struct {
 	Provision   ProvisionOpts   `command:"provision" alias:"p" description:"Create new service instance"`
 	Bind        BindOpts        `command:"bind" alias:"b" description:"Generate credentials for service instance"`
 	Unbind      UnbindOpts      `command:"unbind" alias:"u" description:"Remove credentials for service instance"`
+	Update      UpdateOpts      `command:"update" alias:"U" description:"Update service instance"`
 	Deprovision DeprovisionOpts `command:"deprovision" alias:"d" description:"Destroy service instance"`
 
 	// Local data commands

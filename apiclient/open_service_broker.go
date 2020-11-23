@@ -117,7 +117,7 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string,
 
 // Bind requests new set of credentials to access service instance
 func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID string) (binding *brokerapi.Binding, err error) {
-	someParameters, _ := json.Marshal(map[string]string{"bind1": "123", "bind2": "abc"})
+	someParameters, _ := json.Marshal(map[string]string{})
 	url := fmt.Sprintf("%s/v2/service_instances/%s/service_bindings/%s", broker.url, instanceID, bindingID)
 	details := brokerapi.BindDetails{
 		ServiceID:     serviceID,
@@ -191,6 +191,64 @@ func (broker *OpenServiceBroker) Unbind(serviceID, planID, instanceID, bindingID
 		errorResp := &brokerapi.ErrorResponse{}
 		json.Unmarshal(resBody, errorResp)
 		return fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
+	}
+	return
+}
+
+// Update a service instance
+func (broker *OpenServiceBroker) Update(serviceID, planID, instanceID string, parameters json.RawMessage) (updateResp *brokerapi.UpdateResponse, isAsync bool, err error) {
+	url := fmt.Sprintf("%s/v2/service_instances/%s?accepts_incomplete=true", broker.url, instanceID)
+	previousDetails := brokerapi.PreviousValues{
+		PlanID:           planID,
+		ServiceID:        serviceID,
+		OrgID:            "eden-unknown-guid",
+		SpaceID:          "eden-unknown-space",
+	}
+
+	details := brokerapi.UpdateDetails{
+		ServiceID:        serviceID,
+		PlanID:           planID,
+		RawParameters:    parameters,
+		PreviousValues:	  previousDetails,
+	}
+
+	buffer := &bytes.Buffer{}
+	if err = json.NewEncoder(buffer).Encode(details); err != nil {
+		return nil, false, errwrap.Wrapf("Cannot encode service update details: {{err}}", err)
+	}
+	req, err := http.NewRequest("PATCH", url, buffer)
+	if err != nil {
+		return nil, false, errwrap.Wrapf("Cannot construct HTTP request: {{err}}", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Broker-Api-Version", broker.apiVersion)
+	req.SetBasicAuth(broker.username, broker.password)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, false, errwrap.Wrapf("Failed doing HTTP request: {{err}}", err)
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, false, errwrap.Wrapf("Failed reading HTTP response body: {{err}}", err)
+	}
+	updateResp = &brokerapi.UpdateResponse{}
+	err = json.Unmarshal(resBody, updateResp)
+	if err != nil {
+		return nil, false, errwrap.Wrapf("Failed unmarshalling service update response: {{err}}", err)
+	}
+	if resp.StatusCode == http.StatusAccepted {
+		isAsync = true
+	} else if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
+		isAsync = false
+	}
+	if resp.StatusCode >= 400 {
+		errorResp := &brokerapi.ErrorResponse{}
+		json.Unmarshal(resBody, errorResp)
+		return nil, false, fmt.Errorf("API request error %d: %v", resp.StatusCode, errorResp)
 	}
 	return
 }
