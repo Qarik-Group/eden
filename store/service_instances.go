@@ -80,6 +80,15 @@ func (c FSConfig) FindServiceInstance(idOrName string) FSServiceInstance {
 	return *inst
 }
 
+func (inst FSServiceInstance) FindServiceBinding(idOrName string) int {
+	for i, binding := range inst.Bindings {
+		if idOrName == binding.ID || idOrName == binding.Name {
+			return i
+		}
+	}
+	return -1
+}
+
 // RenameServiceInstance updates the .Name of a service instance
 func (c FSConfig) RenameServiceInstance(idOrName, newName string) {
 	_, inst := c.findOrCreateServiceInstance(idOrName)
