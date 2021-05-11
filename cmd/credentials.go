@@ -25,7 +25,11 @@ func (c CredentialsOpts) Execute(_ []string) (err error) {
 		return fmt.Errorf("credentials --instance '%s' was not found", instanceNameOrID)
 	}
 	if len(inst.Bindings) > 0 {
-		binding := inst.Bindings[0]
+		binding_idx := inst.FindServiceBinding(c.BindingID)
+		if binding_idx == -1 {
+			return fmt.Errorf("binding '%s' was not found for instance '%s'", c.BindingID, instanceNameOrID)
+		}
+		binding := inst.Bindings[binding_idx]
 
 		// convert binding.Credentials into nested map[string]map[string]interface{}
 		credentialsJSON, err := binding.CredentialsJSON()
