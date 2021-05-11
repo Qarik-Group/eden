@@ -3,7 +3,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/hashicorp/errwrap"
 	"github.com/pborman/uuid"
@@ -12,6 +14,7 @@ import (
 
 // BindOpts represents the 'bind' command
 type BindOpts struct {
+	Parameters      string `short:"P" long:"parameters" description:"parameters in json format. To use a file as input, prepend the filename with '@' (-P=@data.json)"`
 }
 
 // Execute is callback from go-flags.Commander interface
@@ -35,7 +38,22 @@ func (c BindOpts) Execute(_ []string) (err error) {
 
 	bindingName := fmt.Sprintf("%s-%s", instance.ServiceName, bindingID)
 
-	bindingResp, err := broker.Bind(instance.ServiceID, instance.PlanID, instance.ID, bindingID)
+	var parameters json.RawMessage
+	if len(c.Parameters) > 0 {
+		var input []byte
+		if strings.HasPrefix(c.Parameters, "@") {
+			input, err = ioutil.ReadFile(c.Parameters[1:])
+			if err != nil {
+				return errwrap.Wrapf("Could not read file: {{err}}", err)
+			}
+		} else {
+			input = []byte(c.Parameters)
+		}
+		if err := json.Unmarshal(input, &parameters); err != nil {
+			return errwrap.Wrapf("Could not unmarshal parameters: {{err}}", err)
+		}
+	}
+	bindingResp, err := broker.Bind(instance.ServiceID, instance.PlanID, instance.ID, bindingID, parameters)
 	if err != nil {
 		return errwrap.Wrapf("Failed to bind to service instance {{err}}", err)
 	}

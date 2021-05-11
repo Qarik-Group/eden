@@ -116,14 +116,13 @@ func (broker *OpenServiceBroker) Provision(serviceID, planID, instanceID string,
 }
 
 // Bind requests new set of credentials to access service instance
-func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID string) (binding *brokerapi.Binding, err error) {
-	someParameters, _ := json.Marshal(map[string]string{"bind1": "123", "bind2": "abc"})
+func (broker *OpenServiceBroker) Bind(serviceID, planID, instanceID, bindingID string,  parameters json.RawMessage) (binding *brokerapi.Binding, err error) {
 	url := fmt.Sprintf("%s/v2/service_instances/%s/service_bindings/%s", broker.url, instanceID, bindingID)
 	details := brokerapi.BindDetails{
 		ServiceID:     serviceID,
 		PlanID:        planID,
 		AppGUID:       "eden-unknown",
-		RawParameters: someParameters,
+		RawParameters: parameters,
 	}
 
 	buffer := &bytes.Buffer{}
